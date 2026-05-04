@@ -1,0 +1,189 @@
+package commands
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/rishimantri795/CLICreator/runtime/httpclient"
+	"github.com/rishimantri795/CLICreator/runtime/output"
+	"github.com/spf13/cobra"
+)
+
+var ecommerceCreateProductsBatchCmd = &cobra.Command{
+	Use:   "create-products-batch",
+	Short: "Create products in batch",
+	RunE:  runEcommerceCreateProductsBatch,
+}
+
+var ecommerceCreateProductsBatchFlags struct {
+	products      []string
+	updateEnabled bool
+	body          string
+}
+
+func init() {
+	ecommerceCreateProductsBatchCmd.Flags().StringSliceVar(&ecommerceCreateProductsBatchFlags.products, "products", nil, "array of products objects")
+	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	ecommerceCreateProductsBatchCmd.Flags().BoolVar(&ecommerceCreateProductsBatchFlags.updateEnabled, "update-enabled", false, "Facilitate to update the existing categories in the same request (updateEnabled = true)")
+	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	ecommerceCreateProductsBatchCmd.Flags().StringVar(&ecommerceCreateProductsBatchFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+
+	ecommerceCmd.AddCommand(ecommerceCreateProductsBatchCmd)
+}
+
+func runEcommerceCreateProductsBatch(cmd *cobra.Command, args []string) error {
+	// --schema: print full input/output type contract without making any network call.
+	if rootFlags.schema {
+		type flagSchema struct {
+			Name        string `json:"name"`
+			Type        string `json:"type"`
+			Required    bool   `json:"required"`
+			Location    string `json:"location"`
+			Description string `json:"description,omitempty"`
+		}
+		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "products",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "array of products objects",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "update-enabled",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "Facilitate to update the existing categories in the same request (updateEnabled = true)",
+		})
+
+		type responseSchema struct {
+			Status      string `json:"status"`
+			ContentType string `json:"content_type,omitempty"`
+			Description string `json:"description,omitempty"`
+		}
+		var responses []responseSchema
+		responses = append(responses, responseSchema{
+			Status:      "201",
+			ContentType: "application/json",
+			Description: "Products created and updated",
+		})
+		responses = append(responses, responseSchema{
+			Status:      "400",
+			ContentType: "application/json",
+			Description: "bad request",
+		})
+
+		schema := map[string]any{
+			"command":     "create-products-batch",
+			"description": "Create products in batch",
+			"http": map[string]any{
+				"method": "POST",
+				"path":   "/products/batch",
+			},
+			"input": map[string]any{
+				"flags":         flags,
+				"body_flag":     true,
+				"body_required": true,
+			},
+			"output": map[string]any{
+				"responses": responses,
+			},
+			"semantics": map[string]any{
+				"safe":         false,
+				"idempotent":   false,
+				"reversible":   true,
+				"side_effects": []string{"creates_resource"},
+				"impact":       "medium",
+			},
+			"requires_auth": true,
+		}
+		data, _ := json.MarshalIndent(schema, "", "  ")
+		fmt.Fprintln(_stdoutCounter, string(data))
+		return nil
+	}
+
+	cfg, err := rootConfig()
+	if err != nil {
+		e := output.NetworkError(err)
+		e.Write(os.Stderr)
+		return output.NewExitError(e)
+	}
+
+	client := httpclient.New(cfg.BaseURL, cfg.AuthProvider())
+	client.Debug = rootFlags.debug
+	client.DryRun = rootFlags.dryRun
+	if rootFlags.noRetries {
+		client.RetryConfig.MaxRetries = 0
+	}
+
+	// Build path params
+	pathParams := map[string]string{}
+
+	req := &httpclient.Request{
+		Method:      "POST",
+		Path:        httpclient.SubstitutePath("/products/batch", pathParams),
+		QueryParams: map[string]string{},
+		ArrayParams: map[string][]string{},
+		Headers:     map[string]string{},
+	}
+
+	// Query parameters
+
+	// Header parameters
+
+	// Request body
+	bodyMap := map[string]any{}
+	if ecommerceCreateProductsBatchFlags.body != "" {
+		if err := json.Unmarshal([]byte(ecommerceCreateProductsBatchFlags.body), &bodyMap); err != nil {
+			_invState.errorType = "parse_error"
+			cliErr := &output.CLIError{
+				Error:    true,
+				Code:     "validation_error",
+				Message:  fmt.Sprintf("invalid JSON in --body: %v", err),
+				ExitCode: output.ExitValidation,
+			}
+			cliErr.Write(os.Stderr)
+			return output.NewExitError(cliErr)
+		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("products") {
+		bodyMap["products"] = ecommerceCreateProductsBatchFlags.products
+	}
+	if cmd.Flags().Changed("update-enabled") {
+		bodyMap["updateEnabled"] = ecommerceCreateProductsBatchFlags.updateEnabled
+	}
+	req.Body = bodyMap
+
+	resp, err := client.Do(req)
+	if err != nil {
+		if strings.Contains(err.Error(), "timeout") || strings.Contains(err.Error(), "deadline exceeded") {
+			_invState.errorType = "timeout"
+		} else {
+			_invState.errorType = "network_error"
+		}
+		e := output.NetworkError(err)
+		e.Write(os.Stderr)
+		return output.NewExitError(e)
+	}
+
+	if resp.StatusCode >= 400 {
+		if resp.StatusCode >= 500 {
+			_invState.errorType = "http_5xx"
+		} else {
+			_invState.errorType = "http_4xx"
+		}
+		_invState.errorCode = resp.StatusCode
+		e := output.HTTPError(resp.StatusCode, resp.Body)
+		e.Write(os.Stderr)
+		return output.NewExitError(e)
+	}
+
+	if rootFlags.jq != "" {
+		return output.JQFilter(_stdoutCounter, resp.Body, rootFlags.jq)
+	}
+	return output.Print(_stdoutCounter, resp.Body, output.Format(cfg.OutputFormat))
+}
