@@ -27,14 +27,14 @@ var masterAccountPostMasterAccountGenerateSsoTokenFlags struct {
 
 func init() {
 	masterAccountPostMasterAccountGenerateSsoTokenCmd.Flags().IntVar(&masterAccountPostMasterAccountGenerateSsoTokenFlags.id, "id", 0, "Id of the sub-account organization")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountPostMasterAccountGenerateSsoTokenCmd.Flags().StringVar(&masterAccountPostMasterAccountGenerateSsoTokenFlags.email, "email", "", "User email of sub-account organization")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountPostMasterAccountGenerateSsoTokenCmd.Flags().StringVar(&masterAccountPostMasterAccountGenerateSsoTokenFlags.target, "target", "", "**Set target after login success** * **automation** - Redirect to Automation after login * **email_campaign** - Redirect to Email Campaign after login * **contacts** - Redirect to Contacts after login * **landing_pages** - Redirect to Landing Pages after login * **email_transactional** - Redirect to Email Transactional after login * **senders** - Redirect to Senders after login * **sms_campaign** - Redirect to Sms Campaign after login * **sms_transactional** - Redirect to Sms Transactional after login ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountPostMasterAccountGenerateSsoTokenCmd.Flags().StringVar(&masterAccountPostMasterAccountGenerateSsoTokenFlags.url, "url", "", "Set the full target URL after login success. The user will land directly on this target URL after login")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	masterAccountPostMasterAccountGenerateSsoTokenCmd.Flags().StringVar(&masterAccountPostMasterAccountGenerateSsoTokenFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	masterAccountPostMasterAccountGenerateSsoTokenCmd.Flags().StringVar(&masterAccountPostMasterAccountGenerateSsoTokenFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	masterAccountCmd.AddCommand(masterAccountPostMasterAccountGenerateSsoTokenCmd)
 }
@@ -53,7 +53,7 @@ func runMasterAccountPostMasterAccountGenerateSsoToken(cmd *cobra.Command, args 
 		flags = append(flags, flagSchema{
 			Name:        "id",
 			Type:        "integer",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Id of the sub-account organization",
 		})

@@ -18,11 +18,14 @@ var dealsCreateNewDealCmd = &cobra.Command{
 }
 
 var dealsCreateNewDealFlags struct {
+	name string
 	body string
 }
 
 func init() {
-	dealsCreateNewDealCmd.Flags().StringVar(&dealsCreateNewDealFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	dealsCreateNewDealCmd.Flags().StringVar(&dealsCreateNewDealFlags.name, "name", "", "Name of deal")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	dealsCreateNewDealCmd.Flags().StringVar(&dealsCreateNewDealFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	dealsCmd.AddCommand(dealsCreateNewDealCmd)
 }
@@ -38,6 +41,20 @@ func runDealsCreateNewDeal(cmd *cobra.Command, args []string) error {
 			Description string `json:"description,omitempty"`
 		}
 		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "name",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Name of deal",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "attributes",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Attributes for deal creation  To assign owner of a Deal you can send attributes.deal_owner and utilize the account email or ID.  If you want to create a deal on a specific pipeline and stage you can use the following attributes `pipeline` and `deal_stage`.  Pipeline and deal_stage are ids you can fetch using this endpoint `/crm/pipeline/details/{pipelineID}` ",
+		})
 
 		type responseSchema struct {
 			Status      string `json:"status"`
@@ -128,6 +145,10 @@ func runDealsCreateNewDeal(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("name") {
+		bodyMap["name"] = dealsCreateNewDealFlags.name
 	}
 	req.Body = bodyMap
 

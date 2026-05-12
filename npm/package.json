@@ -1,0 +1,15 @@
+{
+  "name": "@petl-cli/brev",
+  "version": "0.1.0",
+  "description": "Generated CLI — brevo-api",
+  "bin": {
+    "brevo-api": "bin/run.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/install.js"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "license": "MIT"
+}

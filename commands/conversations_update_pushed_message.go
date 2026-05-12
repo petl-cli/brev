@@ -27,8 +27,8 @@ func init() {
 	conversationsUpdatePushedMessageCmd.Flags().StringVar(&conversationsUpdatePushedMessageFlags.id, "id", "", "ID of the message")
 	conversationsUpdatePushedMessageCmd.MarkFlagRequired("id")
 	conversationsUpdatePushedMessageCmd.Flags().StringVar(&conversationsUpdatePushedMessageFlags.text, "text", "", "edited message text")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	conversationsUpdatePushedMessageCmd.Flags().StringVar(&conversationsUpdatePushedMessageFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	conversationsUpdatePushedMessageCmd.Flags().StringVar(&conversationsUpdatePushedMessageFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	conversationsCmd.AddCommand(conversationsUpdatePushedMessageCmd)
 }
@@ -54,7 +54,7 @@ func runConversationsUpdatePushedMessage(cmd *cobra.Command, args []string) erro
 		flags = append(flags, flagSchema{
 			Name:        "text",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "edited message text",
 		})

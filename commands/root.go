@@ -21,6 +21,9 @@ import (
 // configured, or user has set DO_NOT_TRACK / {PREFIX}_NO_TELEMETRY).
 var _telemetryClient = telemetry.New()
 
+// _caller is detected once per process from environment variables.
+var _caller = telemetry.DetectCaller()
+
 // _configDir is the CLI's config directory (~/.config/<cliName>/).
 // It holds the config file, OAuth token, and the session_id file.
 var _configDir = func() string {
@@ -85,6 +88,8 @@ func _fireEvent(cmd *cobra.Command, exitCode int) {
 		SessionId:   _sessionID,
 		Version:     "0.1.0",
 		OccurredAt:  _invState.startTime,
+		CallerType:  string(_caller.Type),
+		AgentType:   _caller.AgentType,
 	})
 }
 
@@ -217,12 +222,33 @@ func rootConfig() (*config.Config, error) {
 	return _configLoader.Load(flags)
 }
 
+// stripRequiredFlags walks the command tree and clears Cobra's required-flag
+// annotation. Cobra validates required flags BEFORE RunE runs, so without
+// this step `--schema` is unreachable on any command that has required flags.
+// --schema is pure introspection (no network, no request build), so skipping
+// required-flag enforcement is safe — and necessary for agents to discover
+// command contracts without having to guess valid placeholder values.
+func stripRequiredFlags(cmd *cobra.Command) {
+	cmd.Flags().VisitAll(func(f *pflag.Flag) {
+		delete(f.Annotations, cobra.BashCompOneRequiredFlag)
+	})
+	for _, sub := range cmd.Commands() {
+		stripRequiredFlags(sub)
+	}
+}
+
 // Execute runs the root command. Telemetry is flushed before every os.Exit.
 //
 // For the success path, PersistentPostRunE fires the event. For the error path,
 // Cobra does not call PersistentPostRunE, so we fire it here using the state
 // that PersistentPreRunE captured in _invState before RunE ran.
 func Execute() {
+	for _, a := range os.Args[1:] {
+		if a == "--schema" {
+			stripRequiredFlags(rootCmd)
+			break
+		}
+	}
 	if err := rootCmd.Execute(); err != nil {
 		var exitErr *output.ExitError
 		exitCode := output.ExitErr

@@ -18,11 +18,41 @@ var contactsImportContactsProcessCmd = &cobra.Command{
 }
 
 var contactsImportContactsProcessFlags struct {
-	body string
+	fileUrl                 string
+	fileBody                string
+	jsonBody                []string
+	listIds                 []string
+	notifyUrl               string
+	emailBlacklist          bool
+	disableNotification     bool
+	smsBlacklist            bool
+	updateExistingContacts  bool
+	emptyContactsAttributes bool
+	body                    string
 }
 
 func init() {
-	contactsImportContactsProcessCmd.Flags().StringVar(&contactsImportContactsProcessFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	contactsImportContactsProcessCmd.Flags().StringVar(&contactsImportContactsProcessFlags.fileUrl, "file-url", "", "**Mandatory if fileBody and jsonBody is not defined.** URL of the file to be imported (**no local file**). Possible file formats: #### .txt, .csv, .json ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsImportContactsProcessCmd.Flags().StringVar(&contactsImportContactsProcessFlags.fileBody, "file-body", "", "**Mandatory if fileUrl and jsonBody is not defined.** CSV content to be imported. Use semicolon to separate multiple attributes. **Maximum allowed file body size is 10MB** . However we recommend a safe limit of around 8 MB to avoid the issues caused due to increase of file body size while parsing. Please use fileUrl instead to import bigger files. ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsImportContactsProcessCmd.Flags().StringSliceVar(&contactsImportContactsProcessFlags.jsonBody, "json-body", nil, "**Mandatory if fileUrl and fileBody is not defined.** JSON content to be imported. **Maximum allowed json body size is 10MB** . However we recommend a safe limit of around 8 MB to avoid the issues caused due to increase of json body size while parsing. Please use fileUrl instead to import bigger files. ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsImportContactsProcessCmd.Flags().StringSliceVar(&contactsImportContactsProcessFlags.listIds, "list-ids", nil, "**Mandatory if newList is not defined.** Ids of the lists in which the contacts shall be imported. For example, **[2, 4, 7]**. ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsImportContactsProcessCmd.Flags().StringVar(&contactsImportContactsProcessFlags.notifyUrl, "notify-url", "", "URL that will be called once the import process is finished. For reference, https://help.brevo.com/hc/en-us/articles/360007666479")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsImportContactsProcessCmd.Flags().BoolVar(&contactsImportContactsProcessFlags.emailBlacklist, "email-blacklist", false, "To blacklist all the contacts for email")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsImportContactsProcessCmd.Flags().BoolVar(&contactsImportContactsProcessFlags.disableNotification, "disable-notification", false, "To disable email notification")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsImportContactsProcessCmd.Flags().BoolVar(&contactsImportContactsProcessFlags.smsBlacklist, "sms-blacklist", false, "To blacklist all the contacts for sms")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsImportContactsProcessCmd.Flags().BoolVar(&contactsImportContactsProcessFlags.updateExistingContacts, "update-existing-contacts", false, "To facilitate the choice to update the existing contacts")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsImportContactsProcessCmd.Flags().BoolVar(&contactsImportContactsProcessFlags.emptyContactsAttributes, "empty-contacts-attributes", false, "To facilitate the choice to erase any attribute of the existing contacts with empty value. emptyContactsAttributes = true means the empty fields in your import will erase any attribute that currently contain data in Brevo, & emptyContactsAttributes = false means the empty fields will not affect your existing data ( **only available if `updateExistingContacts` set to true **) ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsImportContactsProcessCmd.Flags().StringVar(&contactsImportContactsProcessFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	contactsCmd.AddCommand(contactsImportContactsProcessCmd)
 }
@@ -38,6 +68,83 @@ func runContactsImportContactsProcess(cmd *cobra.Command, args []string) error {
 			Description string `json:"description,omitempty"`
 		}
 		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "file-url",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "**Mandatory if fileBody and jsonBody is not defined.** URL of the file to be imported (**no local file**). Possible file formats: #### .txt, .csv, .json ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "file-body",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "**Mandatory if fileUrl and jsonBody is not defined.** CSV content to be imported. Use semicolon to separate multiple attributes. **Maximum allowed file body size is 10MB** . However we recommend a safe limit of around 8 MB to avoid the issues caused due to increase of file body size while parsing. Please use fileUrl instead to import bigger files. ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "json-body",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "**Mandatory if fileUrl and fileBody is not defined.** JSON content to be imported. **Maximum allowed json body size is 10MB** . However we recommend a safe limit of around 8 MB to avoid the issues caused due to increase of json body size while parsing. Please use fileUrl instead to import bigger files. ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "list-ids",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "**Mandatory if newList is not defined.** Ids of the lists in which the contacts shall be imported. For example, **[2, 4, 7]**. ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "notify-url",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "URL that will be called once the import process is finished. For reference, https://help.brevo.com/hc/en-us/articles/360007666479",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "new-list",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "To create a new list and import the contacts into it, pass the listName and an optional folderId.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "email-blacklist",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "To blacklist all the contacts for email",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "disable-notification",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "To disable email notification",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "sms-blacklist",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "To blacklist all the contacts for sms",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "update-existing-contacts",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "To facilitate the choice to update the existing contacts",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "empty-contacts-attributes",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "To facilitate the choice to erase any attribute of the existing contacts with empty value. emptyContactsAttributes = true means the empty fields in your import will erase any attribute that currently contain data in Brevo, & emptyContactsAttributes = false means the empty fields will not affect your existing data ( **only available if `updateExistingContacts` set to true **) ",
+		})
 
 		type responseSchema struct {
 			Status      string `json:"status"`
@@ -128,6 +235,37 @@ func runContactsImportContactsProcess(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("file-url") {
+		bodyMap["fileUrl"] = contactsImportContactsProcessFlags.fileUrl
+	}
+	if cmd.Flags().Changed("file-body") {
+		bodyMap["fileBody"] = contactsImportContactsProcessFlags.fileBody
+	}
+	if cmd.Flags().Changed("json-body") {
+		bodyMap["jsonBody"] = contactsImportContactsProcessFlags.jsonBody
+	}
+	if cmd.Flags().Changed("list-ids") {
+		bodyMap["listIds"] = contactsImportContactsProcessFlags.listIds
+	}
+	if cmd.Flags().Changed("notify-url") {
+		bodyMap["notifyUrl"] = contactsImportContactsProcessFlags.notifyUrl
+	}
+	if cmd.Flags().Changed("email-blacklist") {
+		bodyMap["emailBlacklist"] = contactsImportContactsProcessFlags.emailBlacklist
+	}
+	if cmd.Flags().Changed("disable-notification") {
+		bodyMap["disableNotification"] = contactsImportContactsProcessFlags.disableNotification
+	}
+	if cmd.Flags().Changed("sms-blacklist") {
+		bodyMap["smsBlacklist"] = contactsImportContactsProcessFlags.smsBlacklist
+	}
+	if cmd.Flags().Changed("update-existing-contacts") {
+		bodyMap["updateExistingContacts"] = contactsImportContactsProcessFlags.updateExistingContacts
+	}
+	if cmd.Flags().Changed("empty-contacts-attributes") {
+		bodyMap["emptyContactsAttributes"] = contactsImportContactsProcessFlags.emptyContactsAttributes
 	}
 	req.Body = bodyMap
 

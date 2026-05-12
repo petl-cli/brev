@@ -19,13 +19,16 @@ var smsCampaignsSendCampaignReportCmd = &cobra.Command{
 
 var smsCampaignsSendCampaignReportFlags struct {
 	campaignId int
+	language   string
 	body       string
 }
 
 func init() {
 	smsCampaignsSendCampaignReportCmd.Flags().IntVar(&smsCampaignsSendCampaignReportFlags.campaignId, "campaign-id", 0, "id of the campaign")
 	smsCampaignsSendCampaignReportCmd.MarkFlagRequired("campaign-id")
-	smsCampaignsSendCampaignReportCmd.Flags().StringVar(&smsCampaignsSendCampaignReportFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	smsCampaignsSendCampaignReportCmd.Flags().StringVar(&smsCampaignsSendCampaignReportFlags.language, "language", "", "Language of email content for campaign report sending.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	smsCampaignsSendCampaignReportCmd.Flags().StringVar(&smsCampaignsSendCampaignReportFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	smsCampaignsCmd.AddCommand(smsCampaignsSendCampaignReportCmd)
 }
@@ -47,6 +50,20 @@ func runSmsCampaignsSendCampaignReport(cmd *cobra.Command, args []string) error 
 			Required:    true,
 			Location:    "path",
 			Description: "id of the campaign",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "language",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Language of email content for campaign report sending.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "email",
+			Type:        "object",
+			Required:    true,
+			Location:    "body",
+			Description: "Custom attributes for the report email.",
 		})
 
 		type responseSchema struct {
@@ -144,6 +161,10 @@ func runSmsCampaignsSendCampaignReport(cmd *cobra.Command, args []string) error 
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("language") {
+		bodyMap["language"] = smsCampaignsSendCampaignReportFlags.language
 	}
 	req.Body = bodyMap
 

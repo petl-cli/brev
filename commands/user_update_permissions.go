@@ -26,12 +26,12 @@ var userUpdatePermissionsFlags struct {
 
 func init() {
 	userUpdatePermissionsCmd.Flags().StringVar(&userUpdatePermissionsFlags.email, "email", "", "Email address for the organization")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	userUpdatePermissionsCmd.Flags().BoolVar(&userUpdatePermissionsFlags.allFeaturesAccess, "all-features-access", false, "All access to the features")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	userUpdatePermissionsCmd.Flags().StringSliceVar(&userUpdatePermissionsFlags.privileges, "privileges", nil, "")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	userUpdatePermissionsCmd.Flags().StringVar(&userUpdatePermissionsFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	userUpdatePermissionsCmd.Flags().StringVar(&userUpdatePermissionsFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	userCmd.AddCommand(userUpdatePermissionsCmd)
 }
@@ -50,21 +50,21 @@ func runUserUpdatePermissions(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "email",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Email address for the organization",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "all-features-access",
 			Type:        "boolean",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "All access to the features",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "privileges",
 			Type:        "array",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "",
 		})

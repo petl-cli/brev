@@ -18,14 +18,20 @@ var companiesUpdateCompanyCmd = &cobra.Command{
 }
 
 var companiesUpdateCompanyFlags struct {
-	id   string
-	body string
+	id          string
+	name        string
+	countryCode int
+	body        string
 }
 
 func init() {
 	companiesUpdateCompanyCmd.Flags().StringVar(&companiesUpdateCompanyFlags.id, "id", "", "")
 	companiesUpdateCompanyCmd.MarkFlagRequired("id")
-	companiesUpdateCompanyCmd.Flags().StringVar(&companiesUpdateCompanyFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	companiesUpdateCompanyCmd.Flags().StringVar(&companiesUpdateCompanyFlags.name, "name", "", "Name of company")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	companiesUpdateCompanyCmd.Flags().IntVar(&companiesUpdateCompanyFlags.countryCode, "country-code", 0, "Country code if phone_number is passed in attributes.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	companiesUpdateCompanyCmd.Flags().StringVar(&companiesUpdateCompanyFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	companiesCmd.AddCommand(companiesUpdateCompanyCmd)
 }
@@ -47,6 +53,27 @@ func runCompaniesUpdateCompany(cmd *cobra.Command, args []string) error {
 			Required:    true,
 			Location:    "path",
 			Description: "",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "name",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Name of company",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "attributes",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Attributes for company update",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "country-code",
+			Type:        "integer",
+			Required:    false,
+			Location:    "body",
+			Description: "Country code if phone_number is passed in attributes.",
 		})
 
 		type responseSchema struct {
@@ -144,6 +171,13 @@ func runCompaniesUpdateCompany(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("name") {
+		bodyMap["name"] = companiesUpdateCompanyFlags.name
+	}
+	if cmd.Flags().Changed("country-code") {
+		bodyMap["countryCode"] = companiesUpdateCompanyFlags.countryCode
 	}
 	req.Body = bodyMap
 

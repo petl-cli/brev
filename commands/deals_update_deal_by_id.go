@@ -19,13 +19,16 @@ var dealsUpdateDealByIdCmd = &cobra.Command{
 
 var dealsUpdateDealByIdFlags struct {
 	id   string
+	name string
 	body string
 }
 
 func init() {
 	dealsUpdateDealByIdCmd.Flags().StringVar(&dealsUpdateDealByIdFlags.id, "id", "", "")
 	dealsUpdateDealByIdCmd.MarkFlagRequired("id")
-	dealsUpdateDealByIdCmd.Flags().StringVar(&dealsUpdateDealByIdFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	dealsUpdateDealByIdCmd.Flags().StringVar(&dealsUpdateDealByIdFlags.name, "name", "", "Name of deal")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	dealsUpdateDealByIdCmd.Flags().StringVar(&dealsUpdateDealByIdFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	dealsCmd.AddCommand(dealsUpdateDealByIdCmd)
 }
@@ -47,6 +50,20 @@ func runDealsUpdateDealById(cmd *cobra.Command, args []string) error {
 			Required:    true,
 			Location:    "path",
 			Description: "",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "name",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Name of deal",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "attributes",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Attributes for deal update  To assign owner of a Deal you can send attributes.deal_owner and utilize the account email or ID.  If you wish to update the pipeline of a deal you need to provide the `pipeline` and the `deal_stage`  Pipeline and deal_stage are ids you can fetch using this endpoint `/crm/pipeline/details/{pipelineID}` ",
 		})
 
 		type responseSchema struct {
@@ -144,6 +161,10 @@ func runDealsUpdateDealById(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("name") {
+		bodyMap["name"] = dealsUpdateDealByIdFlags.name
 	}
 	req.Body = bodyMap
 

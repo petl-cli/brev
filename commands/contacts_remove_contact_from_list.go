@@ -25,7 +25,7 @@ var contactsRemoveContactFromListFlags struct {
 func init() {
 	contactsRemoveContactFromListCmd.Flags().IntVar(&contactsRemoveContactFromListFlags.listId, "list-id", 0, "Id of the list")
 	contactsRemoveContactFromListCmd.MarkFlagRequired("list-id")
-	contactsRemoveContactFromListCmd.Flags().StringVar(&contactsRemoveContactFromListFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	contactsRemoveContactFromListCmd.Flags().StringVar(&contactsRemoveContactFromListFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	contactsCmd.AddCommand(contactsRemoveContactFromListCmd)
 }

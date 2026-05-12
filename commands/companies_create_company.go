@@ -18,11 +18,17 @@ var companiesCreateCompanyCmd = &cobra.Command{
 }
 
 var companiesCreateCompanyFlags struct {
-	body string
+	name        string
+	countryCode int
+	body        string
 }
 
 func init() {
-	companiesCreateCompanyCmd.Flags().StringVar(&companiesCreateCompanyFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	companiesCreateCompanyCmd.Flags().StringVar(&companiesCreateCompanyFlags.name, "name", "", "Name of company")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	companiesCreateCompanyCmd.Flags().IntVar(&companiesCreateCompanyFlags.countryCode, "country-code", 0, "Country code if phone_number is passed in attributes.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	companiesCreateCompanyCmd.Flags().StringVar(&companiesCreateCompanyFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	companiesCmd.AddCommand(companiesCreateCompanyCmd)
 }
@@ -38,6 +44,27 @@ func runCompaniesCreateCompany(cmd *cobra.Command, args []string) error {
 			Description string `json:"description,omitempty"`
 		}
 		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "name",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Name of company",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "attributes",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Attributes for company creation",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "country-code",
+			Type:        "integer",
+			Required:    false,
+			Location:    "body",
+			Description: "Country code if phone_number is passed in attributes.",
+		})
 
 		type responseSchema struct {
 			Status      string `json:"status"`
@@ -128,6 +155,13 @@ func runCompaniesCreateCompany(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("name") {
+		bodyMap["name"] = companiesCreateCompanyFlags.name
+	}
+	if cmd.Flags().Changed("country-code") {
+		bodyMap["countryCode"] = companiesCreateCompanyFlags.countryCode
 	}
 	req.Body = bodyMap
 

@@ -27,8 +27,8 @@ func init() {
 	masterAccountUnlinkSubAccountFromGroupCmd.Flags().StringVar(&masterAccountUnlinkSubAccountFromGroupFlags.groupId, "group-id", "", "Group id")
 	masterAccountUnlinkSubAccountFromGroupCmd.MarkFlagRequired("group-id")
 	masterAccountUnlinkSubAccountFromGroupCmd.Flags().StringSliceVar(&masterAccountUnlinkSubAccountFromGroupFlags.subAccountIds, "sub-account-ids", nil, "List of sub-account ids")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	masterAccountUnlinkSubAccountFromGroupCmd.Flags().StringVar(&masterAccountUnlinkSubAccountFromGroupFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	masterAccountUnlinkSubAccountFromGroupCmd.Flags().StringVar(&masterAccountUnlinkSubAccountFromGroupFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	masterAccountCmd.AddCommand(masterAccountUnlinkSubAccountFromGroupCmd)
 }
@@ -54,7 +54,7 @@ func runMasterAccountUnlinkSubAccountFromGroup(cmd *cobra.Command, args []string
 		flags = append(flags, flagSchema{
 			Name:        "sub-account-ids",
 			Type:        "array",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "List of sub-account ids",
 		})

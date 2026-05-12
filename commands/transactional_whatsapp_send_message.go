@@ -22,7 +22,7 @@ var transactionalWhatsappSendMessageFlags struct {
 }
 
 func init() {
-	transactionalWhatsappSendMessageCmd.Flags().StringVar(&transactionalWhatsappSendMessageFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	transactionalWhatsappSendMessageCmd.Flags().StringVar(&transactionalWhatsappSendMessageFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	transactionalWhatsappCmd.AddCommand(transactionalWhatsappSendMessageCmd)
 }

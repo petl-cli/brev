@@ -27,8 +27,8 @@ func init() {
 	smsCampaignsSendTestSmsCmd.Flags().IntVar(&smsCampaignsSendTestSmsFlags.campaignId, "campaign-id", 0, "Id of the SMS campaign")
 	smsCampaignsSendTestSmsCmd.MarkFlagRequired("campaign-id")
 	smsCampaignsSendTestSmsCmd.Flags().StringVar(&smsCampaignsSendTestSmsFlags.phoneNumber, "phone-number", "", "Mobile number of the recipient with the country code. This number **must belong to one of your contacts in Brevo account and must not be blacklisted** ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	smsCampaignsSendTestSmsCmd.Flags().StringVar(&smsCampaignsSendTestSmsFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	smsCampaignsSendTestSmsCmd.Flags().StringVar(&smsCampaignsSendTestSmsFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	smsCampaignsCmd.AddCommand(smsCampaignsSendTestSmsCmd)
 }

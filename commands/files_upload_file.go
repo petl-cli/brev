@@ -22,19 +22,17 @@ var filesUploadFileFlags struct {
 	dealId    string
 	contactId int
 	companyId string
-	body      string
 }
 
 func init() {
 	filesUploadFileCmd.Flags().StringVar(&filesUploadFileFlags.file, "file", "", "File data to create a file.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	filesUploadFileCmd.MarkFlagRequired("file")
 	filesUploadFileCmd.Flags().StringVar(&filesUploadFileFlags.dealId, "deal-id", "", "")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	filesUploadFileCmd.Flags().IntVar(&filesUploadFileFlags.contactId, "contact-id", 0, "")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	filesUploadFileCmd.Flags().StringVar(&filesUploadFileFlags.companyId, "company-id", "", "")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	filesUploadFileCmd.Flags().StringVar(&filesUploadFileFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 
 	filesCmd.AddCommand(filesUploadFileCmd)
 }
@@ -53,7 +51,7 @@ func runFilesUploadFile(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "file",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "File data to create a file.",
 		})
@@ -154,35 +152,25 @@ func runFilesUploadFile(cmd *cobra.Command, args []string) error {
 
 	// Header parameters
 
-	// Request body
-	bodyMap := map[string]any{}
-	if filesUploadFileFlags.body != "" {
-		if err := json.Unmarshal([]byte(filesUploadFileFlags.body), &bodyMap); err != nil {
-			_invState.errorType = "parse_error"
-			cliErr := &output.CLIError{
-				Error:    true,
-				Code:     "validation_error",
-				Message:  fmt.Sprintf("invalid JSON in --body: %v", err),
-				ExitCode: output.ExitValidation,
-			}
-			cliErr.Write(os.Stderr)
-			return output.NewExitError(cliErr)
-		}
+	// Request body — multipart/form-data. File-marked fields go into Files;
+	// remaining scalar fields go into Fields as text parts.
+	multipart := &httpclient.MultipartBody{
+		Files:  map[string][]string{},
+		Fields: map[string]string{},
 	}
-	// Individual flags overlay onto body (flags take precedence over --body JSON)
 	if cmd.Flags().Changed("file") {
-		bodyMap["file"] = filesUploadFileFlags.file
+		multipart.Files["file"] = []string{filesUploadFileFlags.file}
 	}
 	if cmd.Flags().Changed("deal-id") {
-		bodyMap["dealId"] = filesUploadFileFlags.dealId
+		multipart.Fields["dealId"] = fmt.Sprintf("%v", filesUploadFileFlags.dealId)
 	}
 	if cmd.Flags().Changed("contact-id") {
-		bodyMap["contactId"] = filesUploadFileFlags.contactId
+		multipart.Fields["contactId"] = fmt.Sprintf("%v", filesUploadFileFlags.contactId)
 	}
 	if cmd.Flags().Changed("company-id") {
-		bodyMap["companyId"] = filesUploadFileFlags.companyId
+		multipart.Fields["companyId"] = fmt.Sprintf("%v", filesUploadFileFlags.companyId)
 	}
-	req.Body = bodyMap
+	req.Multipart = multipart
 
 	resp, err := client.Do(req)
 	if err != nil {

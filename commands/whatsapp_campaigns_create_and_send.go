@@ -18,11 +18,20 @@ var whatsappCampaignsCreateAndSendCmd = &cobra.Command{
 }
 
 var whatsappCampaignsCreateAndSendFlags struct {
-	body string
+	name        string
+	templateId  int
+	scheduledAt string
+	body        string
 }
 
 func init() {
-	whatsappCampaignsCreateAndSendCmd.Flags().StringVar(&whatsappCampaignsCreateAndSendFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	whatsappCampaignsCreateAndSendCmd.Flags().StringVar(&whatsappCampaignsCreateAndSendFlags.name, "name", "", "Name of the WhatsApp campaign creation")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	whatsappCampaignsCreateAndSendCmd.Flags().IntVar(&whatsappCampaignsCreateAndSendFlags.templateId, "template-id", 0, "Id of the WhatsApp template in **approved** state")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	whatsappCampaignsCreateAndSendCmd.Flags().StringVar(&whatsappCampaignsCreateAndSendFlags.scheduledAt, "scheduled-at", "", "Sending UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ). **Prefer to pass your timezone in date-time format for accurate result.For example: **2017-06-01T12:30:00+02:00** ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	whatsappCampaignsCreateAndSendCmd.Flags().StringVar(&whatsappCampaignsCreateAndSendFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	whatsappCampaignsCmd.AddCommand(whatsappCampaignsCreateAndSendCmd)
 }
@@ -38,6 +47,34 @@ func runWhatsappCampaignsCreateAndSend(cmd *cobra.Command, args []string) error 
 			Description string `json:"description,omitempty"`
 		}
 		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "name",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Name of the WhatsApp campaign creation",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "template-id",
+			Type:        "integer",
+			Required:    true,
+			Location:    "body",
+			Description: "Id of the WhatsApp template in **approved** state",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "scheduled-at",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Sending UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ). **Prefer to pass your timezone in date-time format for accurate result.For example: **2017-06-01T12:30:00+02:00** ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "recipients",
+			Type:        "object",
+			Required:    true,
+			Location:    "body",
+			Description: "Segment ids and List ids to include/exclude from campaign",
+		})
 
 		type responseSchema struct {
 			Status      string `json:"status"`
@@ -128,6 +165,16 @@ func runWhatsappCampaignsCreateAndSend(cmd *cobra.Command, args []string) error 
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("name") {
+		bodyMap["name"] = whatsappCampaignsCreateAndSendFlags.name
+	}
+	if cmd.Flags().Changed("template-id") {
+		bodyMap["templateId"] = whatsappCampaignsCreateAndSendFlags.templateId
+	}
+	if cmd.Flags().Changed("scheduled-at") {
+		bodyMap["scheduledAt"] = whatsappCampaignsCreateAndSendFlags.scheduledAt
 	}
 	req.Body = bodyMap
 

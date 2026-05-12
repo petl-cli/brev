@@ -27,14 +27,14 @@ var notesCreateNewNoteFlags struct {
 
 func init() {
 	notesCreateNewNoteCmd.Flags().StringVar(&notesCreateNewNoteFlags.text, "text", "", "Text content of a note")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	notesCreateNewNoteCmd.Flags().StringSliceVar(&notesCreateNewNoteFlags.contactIds, "contact-ids", nil, "Contact Ids linked to a note")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	notesCreateNewNoteCmd.Flags().StringSliceVar(&notesCreateNewNoteFlags.dealIds, "deal-ids", nil, "Deal Ids linked to a note")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	notesCreateNewNoteCmd.Flags().StringSliceVar(&notesCreateNewNoteFlags.companyIds, "company-ids", nil, "Company Ids linked to a note")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	notesCreateNewNoteCmd.Flags().StringVar(&notesCreateNewNoteFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	notesCreateNewNoteCmd.Flags().StringVar(&notesCreateNewNoteFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	notesCmd.AddCommand(notesCreateNewNoteCmd)
 }
@@ -53,7 +53,7 @@ func runNotesCreateNewNote(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "text",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Text content of a note",
 		})

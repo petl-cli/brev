@@ -25,10 +25,10 @@ var ecommerceCreateCategoriesBatchFlags struct {
 
 func init() {
 	ecommerceCreateCategoriesBatchCmd.Flags().StringSliceVar(&ecommerceCreateCategoriesBatchFlags.categories, "categories", nil, "array of categories objects")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	ecommerceCreateCategoriesBatchCmd.Flags().BoolVar(&ecommerceCreateCategoriesBatchFlags.updateEnabled, "update-enabled", false, "Facilitate to update the existing categories in the same request (updateEnabled = true)")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	ecommerceCreateCategoriesBatchCmd.Flags().StringVar(&ecommerceCreateCategoriesBatchFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	ecommerceCreateCategoriesBatchCmd.Flags().StringVar(&ecommerceCreateCategoriesBatchFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	ecommerceCmd.AddCommand(ecommerceCreateCategoriesBatchCmd)
 }
@@ -47,7 +47,7 @@ func runEcommerceCreateCategoriesBatch(cmd *cobra.Command, args []string) error 
 		flags = append(flags, flagSchema{
 			Name:        "categories",
 			Type:        "array",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "array of categories objects",
 		})

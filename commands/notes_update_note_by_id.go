@@ -30,14 +30,14 @@ func init() {
 	notesUpdateNoteByIdCmd.Flags().StringVar(&notesUpdateNoteByIdFlags.id, "id", "", "Note ID to update")
 	notesUpdateNoteByIdCmd.MarkFlagRequired("id")
 	notesUpdateNoteByIdCmd.Flags().StringVar(&notesUpdateNoteByIdFlags.text, "text", "", "Text content of a note")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	notesUpdateNoteByIdCmd.Flags().StringSliceVar(&notesUpdateNoteByIdFlags.contactIds, "contact-ids", nil, "Contact Ids linked to a note")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	notesUpdateNoteByIdCmd.Flags().StringSliceVar(&notesUpdateNoteByIdFlags.dealIds, "deal-ids", nil, "Deal Ids linked to a note")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	notesUpdateNoteByIdCmd.Flags().StringSliceVar(&notesUpdateNoteByIdFlags.companyIds, "company-ids", nil, "Company Ids linked to a note")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	notesUpdateNoteByIdCmd.Flags().StringVar(&notesUpdateNoteByIdFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	notesUpdateNoteByIdCmd.Flags().StringVar(&notesUpdateNoteByIdFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	notesCmd.AddCommand(notesUpdateNoteByIdCmd)
 }
@@ -63,7 +63,7 @@ func runNotesUpdateNoteById(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "text",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Text content of a note",
 		})

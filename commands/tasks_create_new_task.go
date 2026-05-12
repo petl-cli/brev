@@ -18,11 +18,41 @@ var tasksCreateNewTaskCmd = &cobra.Command{
 }
 
 var tasksCreateNewTaskFlags struct {
-	body string
+	name         string
+	duration     int
+	taskTypeId   string
+	date         string
+	notes        string
+	done         bool
+	assignToId   string
+	contactsIds  []string
+	dealsIds     []string
+	companiesIds []string
+	body         string
 }
 
 func init() {
-	tasksCreateNewTaskCmd.Flags().StringVar(&tasksCreateNewTaskFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	tasksCreateNewTaskCmd.Flags().StringVar(&tasksCreateNewTaskFlags.name, "name", "", "Name of task")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	tasksCreateNewTaskCmd.Flags().IntVar(&tasksCreateNewTaskFlags.duration, "duration", 0, "Duration of task in milliseconds [1 minute = 60000 ms]")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	tasksCreateNewTaskCmd.Flags().StringVar(&tasksCreateNewTaskFlags.taskTypeId, "task-type-id", "", "Id for type of task e.g Call / Email / Meeting etc.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	tasksCreateNewTaskCmd.Flags().StringVar(&tasksCreateNewTaskFlags.date, "date", "", "Task due date and time")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	tasksCreateNewTaskCmd.Flags().StringVar(&tasksCreateNewTaskFlags.notes, "notes", "", "Notes added to a task")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	tasksCreateNewTaskCmd.Flags().BoolVar(&tasksCreateNewTaskFlags.done, "done", false, "Task marked as done")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	tasksCreateNewTaskCmd.Flags().StringVar(&tasksCreateNewTaskFlags.assignToId, "assign-to-id", "", "To assign a task to a user you can use either the account email or ID.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	tasksCreateNewTaskCmd.Flags().StringSliceVar(&tasksCreateNewTaskFlags.contactsIds, "contacts-ids", nil, "Contact ids for contacts linked to this task")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	tasksCreateNewTaskCmd.Flags().StringSliceVar(&tasksCreateNewTaskFlags.dealsIds, "deals-ids", nil, "Deal ids for deals a task is linked to")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	tasksCreateNewTaskCmd.Flags().StringSliceVar(&tasksCreateNewTaskFlags.companiesIds, "companies-ids", nil, "Companies ids for companies a task is linked to")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	tasksCreateNewTaskCmd.Flags().StringVar(&tasksCreateNewTaskFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	tasksCmd.AddCommand(tasksCreateNewTaskCmd)
 }
@@ -38,6 +68,83 @@ func runTasksCreateNewTask(cmd *cobra.Command, args []string) error {
 			Description string `json:"description,omitempty"`
 		}
 		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "name",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Name of task",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "duration",
+			Type:        "integer",
+			Required:    false,
+			Location:    "body",
+			Description: "Duration of task in milliseconds [1 minute = 60000 ms]",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "task-type-id",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Id for type of task e.g Call / Email / Meeting etc.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "date",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Task due date and time",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "notes",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Notes added to a task",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "done",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "Task marked as done",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "assign-to-id",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "To assign a task to a user you can use either the account email or ID.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "contacts-ids",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "Contact ids for contacts linked to this task",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "deals-ids",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "Deal ids for deals a task is linked to",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "companies-ids",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "Companies ids for companies a task is linked to",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "reminder",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Task reminder date/time for a task",
+		})
 
 		type responseSchema struct {
 			Status      string `json:"status"`
@@ -128,6 +235,37 @@ func runTasksCreateNewTask(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("name") {
+		bodyMap["name"] = tasksCreateNewTaskFlags.name
+	}
+	if cmd.Flags().Changed("duration") {
+		bodyMap["duration"] = tasksCreateNewTaskFlags.duration
+	}
+	if cmd.Flags().Changed("task-type-id") {
+		bodyMap["taskTypeId"] = tasksCreateNewTaskFlags.taskTypeId
+	}
+	if cmd.Flags().Changed("date") {
+		bodyMap["date"] = tasksCreateNewTaskFlags.date
+	}
+	if cmd.Flags().Changed("notes") {
+		bodyMap["notes"] = tasksCreateNewTaskFlags.notes
+	}
+	if cmd.Flags().Changed("done") {
+		bodyMap["done"] = tasksCreateNewTaskFlags.done
+	}
+	if cmd.Flags().Changed("assign-to-id") {
+		bodyMap["assignToId"] = tasksCreateNewTaskFlags.assignToId
+	}
+	if cmd.Flags().Changed("contacts-ids") {
+		bodyMap["contactsIds"] = tasksCreateNewTaskFlags.contactsIds
+	}
+	if cmd.Flags().Changed("deals-ids") {
+		bodyMap["dealsIds"] = tasksCreateNewTaskFlags.dealsIds
+	}
+	if cmd.Flags().Changed("companies-ids") {
+		bodyMap["companiesIds"] = tasksCreateNewTaskFlags.companiesIds
 	}
 	req.Body = bodyMap
 

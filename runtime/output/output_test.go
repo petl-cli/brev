@@ -14,8 +14,8 @@ import (
 
 func TestDetectAgentMode_NoEnv(t *testing.T) {
 	// Ensure none of the agent env vars are set
-	vars := []string{"CLAUDE_CODE", "CURSOR_SESSION_ID", "CODEX", "AIDER", "CLINE",
-		"WINDSURF_SESSION", "GITHUB_COPILOT", "AMAZON_Q_SESSION", "GEMINI_CODE_ASSIST", "CODY"}
+	vars := []string{"CLAUDECODE", "CURSOR_SESSION_ID", "CODEX", "AIDER", "CLINE",
+		"WINDSURF_SESSION", "GITHUB_COPILOT", "AMAZON_Q_SESSION", "GEMINI_CODE_ASSIST", "CODY", "AI_AGENT"}
 	for _, v := range vars {
 		os.Unsetenv(v)
 	}
@@ -25,10 +25,10 @@ func TestDetectAgentMode_NoEnv(t *testing.T) {
 }
 
 func TestDetectAgentMode_ClaudeCode(t *testing.T) {
-	os.Setenv("CLAUDE_CODE", "1")
-	defer os.Unsetenv("CLAUDE_CODE")
+	os.Setenv("CLAUDECODE", "1")
+	defer os.Unsetenv("CLAUDECODE")
 	if !output.DetectAgentMode(false) {
-		t.Error("expected DetectAgentMode()=true when CLAUDE_CODE is set")
+		t.Error("expected DetectAgentMode()=true when CLAUDECODE is set")
 	}
 }
 

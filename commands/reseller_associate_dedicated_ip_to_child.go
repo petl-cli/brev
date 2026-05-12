@@ -27,8 +27,8 @@ func init() {
 	resellerAssociateDedicatedIpToChildCmd.Flags().StringVar(&resellerAssociateDedicatedIpToChildFlags.childIdentifier, "child-identifier", "", "Either auth key or id of reseller's child")
 	resellerAssociateDedicatedIpToChildCmd.MarkFlagRequired("child-identifier")
 	resellerAssociateDedicatedIpToChildCmd.Flags().StringVar(&resellerAssociateDedicatedIpToChildFlags.ip, "ip", "", "Dedicated ID")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	resellerAssociateDedicatedIpToChildCmd.Flags().StringVar(&resellerAssociateDedicatedIpToChildFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	resellerAssociateDedicatedIpToChildCmd.Flags().StringVar(&resellerAssociateDedicatedIpToChildFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	resellerCmd.AddCommand(resellerAssociateDedicatedIpToChildCmd)
 }

@@ -26,12 +26,12 @@ var userSendInvitationFlags struct {
 
 func init() {
 	userSendInvitationCmd.Flags().StringVar(&userSendInvitationFlags.email, "email", "", "Email address for the organization")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	userSendInvitationCmd.Flags().BoolVar(&userSendInvitationFlags.allFeaturesAccess, "all-features-access", false, "All access to the features")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	userSendInvitationCmd.Flags().StringSliceVar(&userSendInvitationFlags.privileges, "privileges", nil, "")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	userSendInvitationCmd.Flags().StringVar(&userSendInvitationFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	userSendInvitationCmd.Flags().StringVar(&userSendInvitationFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	userCmd.AddCommand(userSendInvitationCmd)
 }
@@ -50,21 +50,21 @@ func runUserSendInvitation(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "email",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Email address for the organization",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "all-features-access",
 			Type:        "boolean",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "All access to the features",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "privileges",
 			Type:        "array",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "",
 		})

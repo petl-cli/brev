@@ -29,12 +29,12 @@ func init() {
 	sendersUpdateSenderByIdCmd.Flags().IntVar(&sendersUpdateSenderByIdFlags.senderId, "sender-id", 0, "Id of the sender")
 	sendersUpdateSenderByIdCmd.MarkFlagRequired("sender-id")
 	sendersUpdateSenderByIdCmd.Flags().StringVar(&sendersUpdateSenderByIdFlags.name, "name", "", "From Name to update the sender")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	sendersUpdateSenderByIdCmd.Flags().StringVar(&sendersUpdateSenderByIdFlags.email, "email", "", "From Email to update the sender")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	sendersUpdateSenderByIdCmd.Flags().StringSliceVar(&sendersUpdateSenderByIdFlags.ips, "ips", nil, "**Only in case of dedicated IP**. IPs to associate to the sender. If passed, will replace all the existing IPs. ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	sendersUpdateSenderByIdCmd.Flags().StringVar(&sendersUpdateSenderByIdFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	sendersUpdateSenderByIdCmd.Flags().StringVar(&sendersUpdateSenderByIdFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	sendersCmd.AddCommand(sendersUpdateSenderByIdCmd)
 }

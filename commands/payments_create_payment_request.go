@@ -18,11 +18,20 @@ var paymentsCreatePaymentRequestCmd = &cobra.Command{
 }
 
 var paymentsCreatePaymentRequestFlags struct {
-	body string
+	reference     string
+	contactId     int
+	configuration string
+	body          string
 }
 
 func init() {
-	paymentsCreatePaymentRequestCmd.Flags().StringVar(&paymentsCreatePaymentRequestFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	paymentsCreatePaymentRequestCmd.Flags().StringVar(&paymentsCreatePaymentRequestFlags.reference, "reference", "", "Reference of the payment request, it will appear on the payment page. ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	paymentsCreatePaymentRequestCmd.Flags().IntVar(&paymentsCreatePaymentRequestFlags.contactId, "contact-id", 0, "Brevo ID of the contact requested to pay. ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	paymentsCreatePaymentRequestCmd.Flags().StringVar(&paymentsCreatePaymentRequestFlags.configuration, "configuration", "", "Optional. Redirect contact to a custom success page once payment is successful. If empty the default Brevo page will be displayed once a payment is validated ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	paymentsCreatePaymentRequestCmd.Flags().StringVar(&paymentsCreatePaymentRequestFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	paymentsCmd.AddCommand(paymentsCreatePaymentRequestCmd)
 }
@@ -38,6 +47,41 @@ func runPaymentsCreatePaymentRequest(cmd *cobra.Command, args []string) error {
 			Description string `json:"description,omitempty"`
 		}
 		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "reference",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Reference of the payment request, it will appear on the payment page. ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "cart",
+			Type:        "object",
+			Required:    true,
+			Location:    "body",
+			Description: "Specify the payment currency and amount. ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "contact-id",
+			Type:        "integer",
+			Required:    true,
+			Location:    "body",
+			Description: "Brevo ID of the contact requested to pay. ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "notification",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Optional. Use this object if you want to let Brevo send an email to the contact, with the payment request URL. If empty, no notifications (message and reminders) will be sent. ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "configuration",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Optional. Redirect contact to a custom success page once payment is successful. If empty the default Brevo page will be displayed once a payment is validated ",
+		})
 
 		type responseSchema struct {
 			Status      string `json:"status"`
@@ -138,6 +182,16 @@ func runPaymentsCreatePaymentRequest(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("reference") {
+		bodyMap["reference"] = paymentsCreatePaymentRequestFlags.reference
+	}
+	if cmd.Flags().Changed("contact-id") {
+		bodyMap["contactId"] = paymentsCreatePaymentRequestFlags.contactId
+	}
+	if cmd.Flags().Changed("configuration") {
+		bodyMap["configuration"] = paymentsCreatePaymentRequestFlags.configuration
 	}
 	req.Body = bodyMap
 

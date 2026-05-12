@@ -35,24 +35,24 @@ func init() {
 	externalFeedsUpdateFeedByUuidCmd.Flags().StringVar(&externalFeedsUpdateFeedByUuidFlags.uuid, "uuid", "", "UUID of the feed to update")
 	externalFeedsUpdateFeedByUuidCmd.MarkFlagRequired("uuid")
 	externalFeedsUpdateFeedByUuidCmd.Flags().StringVar(&externalFeedsUpdateFeedByUuidFlags.name, "name", "", "Name of the feed")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	externalFeedsUpdateFeedByUuidCmd.Flags().StringVar(&externalFeedsUpdateFeedByUuidFlags.url, "url", "", "URL of the feed")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	externalFeedsUpdateFeedByUuidCmd.Flags().StringVar(&externalFeedsUpdateFeedByUuidFlags.authType, "auth-type", "", "Auth type of the feed:  * `basic`  * `token`  * `noAuth` ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	externalFeedsUpdateFeedByUuidCmd.Flags().StringVar(&externalFeedsUpdateFeedByUuidFlags.username, "username", "", "Username for authType `basic`")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	externalFeedsUpdateFeedByUuidCmd.Flags().StringVar(&externalFeedsUpdateFeedByUuidFlags.password, "password", "", "Password for authType `basic`")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	externalFeedsUpdateFeedByUuidCmd.Flags().StringVar(&externalFeedsUpdateFeedByUuidFlags.token, "token", "", "Token for authType `token`")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	externalFeedsUpdateFeedByUuidCmd.Flags().StringSliceVar(&externalFeedsUpdateFeedByUuidFlags.headers, "headers", nil, "Custom headers for the feed")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	externalFeedsUpdateFeedByUuidCmd.Flags().IntVar(&externalFeedsUpdateFeedByUuidFlags.maxRetries, "max-retries", 0, "Maximum number of retries on the feed url")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	externalFeedsUpdateFeedByUuidCmd.Flags().BoolVar(&externalFeedsUpdateFeedByUuidFlags.cache, "cache", false, "Toggle caching of feed url response")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	externalFeedsUpdateFeedByUuidCmd.Flags().StringVar(&externalFeedsUpdateFeedByUuidFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	externalFeedsUpdateFeedByUuidCmd.Flags().StringVar(&externalFeedsUpdateFeedByUuidFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	externalFeedsCmd.AddCommand(externalFeedsUpdateFeedByUuidCmd)
 }

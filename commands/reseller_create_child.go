@@ -29,18 +29,18 @@ var resellerCreateChildFlags struct {
 
 func init() {
 	resellerCreateChildCmd.Flags().StringVar(&resellerCreateChildFlags.email, "email", "", "Email address to create the child account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerCreateChildCmd.Flags().StringVar(&resellerCreateChildFlags.firstName, "first-name", "", "First name to use to create the child account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerCreateChildCmd.Flags().StringVar(&resellerCreateChildFlags.lastName, "last-name", "", "Last name to use to create the child account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerCreateChildCmd.Flags().StringVar(&resellerCreateChildFlags.companyName, "company-name", "", "Company name to use to create the child account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerCreateChildCmd.Flags().StringVar(&resellerCreateChildFlags.password, "password", "", "Password for the child account to login")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerCreateChildCmd.Flags().StringVar(&resellerCreateChildFlags.language, "language", "", "Language of the child account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	resellerCreateChildCmd.Flags().StringVar(&resellerCreateChildFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	resellerCreateChildCmd.Flags().StringVar(&resellerCreateChildFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	resellerCmd.AddCommand(resellerCreateChildCmd)
 }
@@ -59,35 +59,35 @@ func runResellerCreateChild(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "email",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Email address to create the child account",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "first-name",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "First name to use to create the child account",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "last-name",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Last name to use to create the child account",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "company-name",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Company name to use to create the child account",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "password",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Password for the child account to login",
 		})

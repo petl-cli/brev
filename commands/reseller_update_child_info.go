@@ -31,16 +31,16 @@ func init() {
 	resellerUpdateChildInfoCmd.Flags().StringVar(&resellerUpdateChildInfoFlags.childIdentifier, "child-identifier", "", "Either auth key or id of reseller's child")
 	resellerUpdateChildInfoCmd.MarkFlagRequired("child-identifier")
 	resellerUpdateChildInfoCmd.Flags().StringVar(&resellerUpdateChildInfoFlags.email, "email", "", "New Email address to update the child account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerUpdateChildInfoCmd.Flags().StringVar(&resellerUpdateChildInfoFlags.firstName, "first-name", "", "New First name to use to update the child account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerUpdateChildInfoCmd.Flags().StringVar(&resellerUpdateChildInfoFlags.lastName, "last-name", "", "New Last name to use to update the child account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerUpdateChildInfoCmd.Flags().StringVar(&resellerUpdateChildInfoFlags.companyName, "company-name", "", "New Company name to use to update the child account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerUpdateChildInfoCmd.Flags().StringVar(&resellerUpdateChildInfoFlags.password, "password", "", "New password for the child account to login")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	resellerUpdateChildInfoCmd.Flags().StringVar(&resellerUpdateChildInfoFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	resellerUpdateChildInfoCmd.Flags().StringVar(&resellerUpdateChildInfoFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	resellerCmd.AddCommand(resellerUpdateChildInfoCmd)
 }

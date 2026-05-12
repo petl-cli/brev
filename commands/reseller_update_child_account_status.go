@@ -30,14 +30,14 @@ func init() {
 	resellerUpdateChildAccountStatusCmd.Flags().StringVar(&resellerUpdateChildAccountStatusFlags.childIdentifier, "child-identifier", "", "Either auth key or id of reseller's child")
 	resellerUpdateChildAccountStatusCmd.MarkFlagRequired("child-identifier")
 	resellerUpdateChildAccountStatusCmd.Flags().BoolVar(&resellerUpdateChildAccountStatusFlags.transactionalEmail, "transactional-email", false, "Status of Transactional Email Platform activation for your account (true=enabled, false=disabled)")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerUpdateChildAccountStatusCmd.Flags().BoolVar(&resellerUpdateChildAccountStatusFlags.transactionalSms, "transactional-sms", false, "Status of Transactional SMS Platform activation for your account (true=enabled, false=disabled)")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerUpdateChildAccountStatusCmd.Flags().BoolVar(&resellerUpdateChildAccountStatusFlags.marketingAutomation, "marketing-automation", false, "Status of Marketing Automation Platform activation for your account (true=enabled, false=disabled)")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerUpdateChildAccountStatusCmd.Flags().BoolVar(&resellerUpdateChildAccountStatusFlags.smsCampaign, "sms-campaign", false, "Status of SMS Campaign Platform activation for your account (true=enabled, false=disabled)")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	resellerUpdateChildAccountStatusCmd.Flags().StringVar(&resellerUpdateChildAccountStatusFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	resellerUpdateChildAccountStatusCmd.Flags().StringVar(&resellerUpdateChildAccountStatusFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	resellerCmd.AddCommand(resellerUpdateChildAccountStatusCmd)
 }

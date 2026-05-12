@@ -25,10 +25,10 @@ var masterAccountCreateSubAccountKeyFlags struct {
 
 func init() {
 	masterAccountCreateSubAccountKeyCmd.Flags().IntVar(&masterAccountCreateSubAccountKeyFlags.id, "id", 0, "Id of the sub-account organization")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountCreateSubAccountKeyCmd.Flags().StringVar(&masterAccountCreateSubAccountKeyFlags.name, "name", "", "Name of the API key")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	masterAccountCreateSubAccountKeyCmd.Flags().StringVar(&masterAccountCreateSubAccountKeyFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	masterAccountCreateSubAccountKeyCmd.Flags().StringVar(&masterAccountCreateSubAccountKeyFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	masterAccountCmd.AddCommand(masterAccountCreateSubAccountKeyCmd)
 }
@@ -47,14 +47,14 @@ func runMasterAccountCreateSubAccountKey(cmd *cobra.Command, args []string) erro
 		flags = append(flags, flagSchema{
 			Name:        "id",
 			Type:        "integer",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Id of the sub-account organization",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "name",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Name of the API key",
 		})

@@ -25,7 +25,7 @@ var masterAccountUpdateSubAccountPlanFlags struct {
 func init() {
 	masterAccountUpdateSubAccountPlanCmd.Flags().IntVar(&masterAccountUpdateSubAccountPlanFlags.id, "id", 0, "Id of the sub-account organization")
 	masterAccountUpdateSubAccountPlanCmd.MarkFlagRequired("id")
-	masterAccountUpdateSubAccountPlanCmd.Flags().StringVar(&masterAccountUpdateSubAccountPlanFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	masterAccountUpdateSubAccountPlanCmd.Flags().StringVar(&masterAccountUpdateSubAccountPlanFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	masterAccountCmd.AddCommand(masterAccountUpdateSubAccountPlanCmd)
 }
@@ -47,6 +47,20 @@ func runMasterAccountUpdateSubAccountPlan(cmd *cobra.Command, args []string) err
 			Required:    true,
 			Location:    "path",
 			Description: "Id of the sub-account organization",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "credits",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Credit details to update",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "features",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Features details to update",
 		})
 
 		type responseSchema struct {
@@ -145,6 +159,7 @@ func runMasterAccountUpdateSubAccountPlan(cmd *cobra.Command, args []string) err
 			return output.NewExitError(cliErr)
 		}
 	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
 	req.Body = bodyMap
 
 	resp, err := client.Do(req)

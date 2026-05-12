@@ -25,10 +25,10 @@ var emailCampaignsUploadImageToGalleryFlags struct {
 
 func init() {
 	emailCampaignsUploadImageToGalleryCmd.Flags().StringVar(&emailCampaignsUploadImageToGalleryFlags.imageUrl, "image-url", "", "The absolute url of the image (**no local file**). Maximum allowed size for image is **2MB**. Allowed extensions for images are: #### jpeg, jpg, png, bmp, gif. ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	emailCampaignsUploadImageToGalleryCmd.Flags().StringVar(&emailCampaignsUploadImageToGalleryFlags.name, "name", "", "Name of the image.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	emailCampaignsUploadImageToGalleryCmd.Flags().StringVar(&emailCampaignsUploadImageToGalleryFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	emailCampaignsUploadImageToGalleryCmd.Flags().StringVar(&emailCampaignsUploadImageToGalleryFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	emailCampaignsCmd.AddCommand(emailCampaignsUploadImageToGalleryCmd)
 }
@@ -47,7 +47,7 @@ func runEmailCampaignsUploadImageToGallery(cmd *cobra.Command, args []string) er
 		flags = append(flags, flagSchema{
 			Name:        "image-url",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "The absolute url of the image (**no local file**). Maximum allowed size for image is **2MB**. Allowed extensions for images are: #### jpeg, jpg, png, bmp, gif. ",
 		})

@@ -22,7 +22,6 @@ type CallerType string
 const (
 	CallerHuman CallerType = "human" // interactive terminal session
 	CallerAgent CallerType = "agent" // AI coding agent (Claude Code, Cursor, Cline, etc.)
-	CallerCI    CallerType = "ci"    // CI/CD pipeline
 )
 
 // CallerInfo holds the detected identity of the CLI caller.
@@ -43,7 +42,7 @@ type agentProbe struct {
 // agentProbes is evaluated in order; first match wins.
 // Ordered roughly by specificity — env vars unique to one agent come first.
 var agentProbes = []agentProbe{
-	{"CLAUDE_CODE", "claude_code", "CLAUDE_CODE_SESSION_ID"},
+	{"CLAUDECODE", "claude_code", "CLAUDE_CODE_SESSION_ID"}, // Claude Code sets CLAUDECODE=1
 	{"CURSOR_SESSION_ID", "cursor", "CURSOR_SESSION_ID"},
 	{"CLINE_SESSION_ID", "cline", "CLINE_SESSION_ID"},
 	{"WINDSURF_SESSION", "windsurf", "WINDSURF_SESSION"},
@@ -53,6 +52,7 @@ var agentProbes = []agentProbe{
 	{"AIDER", "aider", ""},
 	{"CODY", "cody", ""},
 	{"GEMINI_CODE_ASSIST", "gemini", ""},
+	{"AI_AGENT", "unknown_agent", ""}, // generic catch-all (e.g. AI_AGENT=claude-code/...)
 }
 
 // DetectCaller inspects environment variables to identify who is running the CLI.
@@ -70,18 +70,6 @@ func DetectCaller() CallerInfo {
 				AgentType: p.agentType,
 				SessionID: sessionID,
 			}
-		}
-	}
-
-	if os.Getenv("CI") != "" ||
-		os.Getenv("GITHUB_ACTIONS") != "" ||
-		os.Getenv("GITLAB_CI") != "" ||
-		os.Getenv("CIRCLECI") != "" ||
-		os.Getenv("BUILDKITE") != "" ||
-		os.Getenv("JENKINS_URL") != "" {
-		return CallerInfo{
-			Type:      CallerCI,
-			SessionID: os.Getenv("GITHUB_RUN_ID"), // empty for non-GHA CI
 		}
 	}
 

@@ -18,11 +18,35 @@ var ecommerceManageOrderStatusCmd = &cobra.Command{
 }
 
 var ecommerceManageOrderStatusFlags struct {
-	body string
+	id        string
+	createdAt string
+	updatedAt string
+	status    string
+	amount    float64
+	products  []string
+	email     string
+	coupons   []string
+	body      string
 }
 
 func init() {
-	ecommerceManageOrderStatusCmd.Flags().StringVar(&ecommerceManageOrderStatusFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	ecommerceManageOrderStatusCmd.Flags().StringVar(&ecommerceManageOrderStatusFlags.id, "id", "", "Unique ID of the order.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	ecommerceManageOrderStatusCmd.Flags().StringVar(&ecommerceManageOrderStatusFlags.createdAt, "created-at", "", "Event occurrence UTC date-time (YYYY-MM-DDTHH:mm:ssZ), when order is actually created.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	ecommerceManageOrderStatusCmd.Flags().StringVar(&ecommerceManageOrderStatusFlags.updatedAt, "updated-at", "", "Event updated UTC date-time (YYYY-MM-DDTHH:mm:ssZ), when the status of the order is actually changed/updated.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	ecommerceManageOrderStatusCmd.Flags().StringVar(&ecommerceManageOrderStatusFlags.status, "status", "", "State of the order.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	ecommerceManageOrderStatusCmd.Flags().Float64Var(&ecommerceManageOrderStatusFlags.amount, "amount", 0, "Total amount of the order, including all shipping expenses, tax and the price of items.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	ecommerceManageOrderStatusCmd.Flags().StringSliceVar(&ecommerceManageOrderStatusFlags.products, "products", nil, "")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	ecommerceManageOrderStatusCmd.Flags().StringVar(&ecommerceManageOrderStatusFlags.email, "email", "", "Email of the contact, Mandatory if \"phone\" field is not passed in \"billing\" parameter.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	ecommerceManageOrderStatusCmd.Flags().StringSliceVar(&ecommerceManageOrderStatusFlags.coupons, "coupons", nil, "Coupons applied to the order. Stored case insensitive.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	ecommerceManageOrderStatusCmd.Flags().StringVar(&ecommerceManageOrderStatusFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	ecommerceCmd.AddCommand(ecommerceManageOrderStatusCmd)
 }
@@ -38,6 +62,69 @@ func runEcommerceManageOrderStatus(cmd *cobra.Command, args []string) error {
 			Description string `json:"description,omitempty"`
 		}
 		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "id",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Unique ID of the order.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "created-at",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Event occurrence UTC date-time (YYYY-MM-DDTHH:mm:ssZ), when order is actually created.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "updated-at",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Event updated UTC date-time (YYYY-MM-DDTHH:mm:ssZ), when the status of the order is actually changed/updated.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "status",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "State of the order.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "amount",
+			Type:        "number",
+			Required:    true,
+			Location:    "body",
+			Description: "Total amount of the order, including all shipping expenses, tax and the price of items.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "products",
+			Type:        "array",
+			Required:    true,
+			Location:    "body",
+			Description: "",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "email",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Email of the contact, Mandatory if \"phone\" field is not passed in \"billing\" parameter.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "billing",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Billing details of an order.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "coupons",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "Coupons applied to the order. Stored case insensitive.",
+		})
 
 		type responseSchema struct {
 			Status      string `json:"status"`
@@ -128,6 +215,31 @@ func runEcommerceManageOrderStatus(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("id") {
+		bodyMap["id"] = ecommerceManageOrderStatusFlags.id
+	}
+	if cmd.Flags().Changed("created-at") {
+		bodyMap["createdAt"] = ecommerceManageOrderStatusFlags.createdAt
+	}
+	if cmd.Flags().Changed("updated-at") {
+		bodyMap["updatedAt"] = ecommerceManageOrderStatusFlags.updatedAt
+	}
+	if cmd.Flags().Changed("status") {
+		bodyMap["status"] = ecommerceManageOrderStatusFlags.status
+	}
+	if cmd.Flags().Changed("amount") {
+		bodyMap["amount"] = ecommerceManageOrderStatusFlags.amount
+	}
+	if cmd.Flags().Changed("products") {
+		bodyMap["products"] = ecommerceManageOrderStatusFlags.products
+	}
+	if cmd.Flags().Changed("email") {
+		bodyMap["email"] = ecommerceManageOrderStatusFlags.email
+	}
+	if cmd.Flags().Changed("coupons") {
+		bodyMap["coupons"] = ecommerceManageOrderStatusFlags.coupons
 	}
 	req.Body = bodyMap
 

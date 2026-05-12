@@ -24,8 +24,8 @@ var masterAccountMasterAccountGenerateSsoTokenFlags struct {
 
 func init() {
 	masterAccountMasterAccountGenerateSsoTokenCmd.Flags().StringVar(&masterAccountMasterAccountGenerateSsoTokenFlags.email, "email", "", "User email of admin account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	masterAccountMasterAccountGenerateSsoTokenCmd.Flags().StringVar(&masterAccountMasterAccountGenerateSsoTokenFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	masterAccountMasterAccountGenerateSsoTokenCmd.Flags().StringVar(&masterAccountMasterAccountGenerateSsoTokenFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	masterAccountCmd.AddCommand(masterAccountMasterAccountGenerateSsoTokenCmd)
 }
@@ -44,7 +44,7 @@ func runMasterAccountMasterAccountGenerateSsoToken(cmd *cobra.Command, args []st
 		flags = append(flags, flagSchema{
 			Name:        "email",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "User email of admin account",
 		})

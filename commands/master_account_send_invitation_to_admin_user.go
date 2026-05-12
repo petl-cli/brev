@@ -27,14 +27,14 @@ var masterAccountSendInvitationToAdminUserFlags struct {
 
 func init() {
 	masterAccountSendInvitationToAdminUserCmd.Flags().StringVar(&masterAccountSendInvitationToAdminUserFlags.email, "email", "", "Email address for the organization")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountSendInvitationToAdminUserCmd.Flags().BoolVar(&masterAccountSendInvitationToAdminUserFlags.allFeaturesAccess, "all-features-access", false, "All access to the features")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountSendInvitationToAdminUserCmd.Flags().StringSliceVar(&masterAccountSendInvitationToAdminUserFlags.groupIds, "group-ids", nil, "Ids of Group")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountSendInvitationToAdminUserCmd.Flags().StringSliceVar(&masterAccountSendInvitationToAdminUserFlags.privileges, "privileges", nil, "")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	masterAccountSendInvitationToAdminUserCmd.Flags().StringVar(&masterAccountSendInvitationToAdminUserFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	masterAccountSendInvitationToAdminUserCmd.Flags().StringVar(&masterAccountSendInvitationToAdminUserFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	masterAccountCmd.AddCommand(masterAccountSendInvitationToAdminUserCmd)
 }
@@ -53,14 +53,14 @@ func runMasterAccountSendInvitationToAdminUser(cmd *cobra.Command, args []string
 		flags = append(flags, flagSchema{
 			Name:        "email",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Email address for the organization",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "all-features-access",
 			Type:        "boolean",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "All access to the features",
 		})
@@ -74,7 +74,7 @@ func runMasterAccountSendInvitationToAdminUser(cmd *cobra.Command, args []string
 		flags = append(flags, flagSchema{
 			Name:        "privileges",
 			Type:        "array",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "",
 		})

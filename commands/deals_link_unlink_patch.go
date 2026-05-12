@@ -30,14 +30,14 @@ func init() {
 	dealsLinkUnlinkPatchCmd.Flags().StringVar(&dealsLinkUnlinkPatchFlags.id, "id", "", "")
 	dealsLinkUnlinkPatchCmd.MarkFlagRequired("id")
 	dealsLinkUnlinkPatchCmd.Flags().StringSliceVar(&dealsLinkUnlinkPatchFlags.linkContactIds, "link-contact-ids", nil, "Contact ids for contacts to be linked with deal")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	dealsLinkUnlinkPatchCmd.Flags().StringSliceVar(&dealsLinkUnlinkPatchFlags.unlinkContactIds, "unlink-contact-ids", nil, "Contact ids for contacts to be unlinked from deal")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	dealsLinkUnlinkPatchCmd.Flags().StringSliceVar(&dealsLinkUnlinkPatchFlags.linkCompanyIds, "link-company-ids", nil, "Company ids to be linked with deal")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	dealsLinkUnlinkPatchCmd.Flags().StringSliceVar(&dealsLinkUnlinkPatchFlags.unlinkCompanyIds, "unlink-company-ids", nil, "Company ids to be unlinked from deal")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	dealsLinkUnlinkPatchCmd.Flags().StringVar(&dealsLinkUnlinkPatchFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	dealsLinkUnlinkPatchCmd.Flags().StringVar(&dealsLinkUnlinkPatchFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	dealsCmd.AddCommand(dealsLinkUnlinkPatchCmd)
 }

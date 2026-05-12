@@ -27,8 +27,8 @@ func init() {
 	resellerCreateChildDomainCmd.Flags().StringVar(&resellerCreateChildDomainFlags.childIdentifier, "child-identifier", "", "Either auth key or id of reseller's child")
 	resellerCreateChildDomainCmd.MarkFlagRequired("child-identifier")
 	resellerCreateChildDomainCmd.Flags().StringVar(&resellerCreateChildDomainFlags.domain, "domain", "", "Sender domain to add for a specific child account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	resellerCreateChildDomainCmd.Flags().StringVar(&resellerCreateChildDomainFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	resellerCreateChildDomainCmd.Flags().StringVar(&resellerCreateChildDomainFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	resellerCmd.AddCommand(resellerCreateChildDomainCmd)
 }

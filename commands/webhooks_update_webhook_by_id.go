@@ -18,14 +18,32 @@ var webhooksUpdateWebhookByIdCmd = &cobra.Command{
 }
 
 var webhooksUpdateWebhookByIdFlags struct {
-	webhookId int
-	body      string
+	webhookId   int
+	description string
+	url         string
+	events      []string
+	domain      string
+	batched     bool
+	headers     []string
+	body        string
 }
 
 func init() {
 	webhooksUpdateWebhookByIdCmd.Flags().IntVar(&webhooksUpdateWebhookByIdFlags.webhookId, "webhook-id", 0, "Id of the webhook")
 	webhooksUpdateWebhookByIdCmd.MarkFlagRequired("webhook-id")
-	webhooksUpdateWebhookByIdCmd.Flags().StringVar(&webhooksUpdateWebhookByIdFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	webhooksUpdateWebhookByIdCmd.Flags().StringVar(&webhooksUpdateWebhookByIdFlags.description, "description", "", "Description of the webhook")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	webhooksUpdateWebhookByIdCmd.Flags().StringVar(&webhooksUpdateWebhookByIdFlags.url, "url", "", "URL of the webhook")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	webhooksUpdateWebhookByIdCmd.Flags().StringSliceVar(&webhooksUpdateWebhookByIdFlags.events, "events", nil, "- Events triggering the webhook. Possible values for **Transactional** type webhook: #### `sent` OR `request`, `delivered`, `hardBounce`, `softBounce`, `blocked`, `spam`, `invalid`, `deferred`, `click`, `opened`, `uniqueOpened` and `unsubscribed` - Possible values for **Marketing** type webhook: #### `spam`, `opened`, `click`, `hardBounce`, `softBounce`, `unsubscribed`, `listAddition` & `delivered` - Possible values for **Inbound** type webhook: #### `inboundEmailProcessed` ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	webhooksUpdateWebhookByIdCmd.Flags().StringVar(&webhooksUpdateWebhookByIdFlags.domain, "domain", "", "Inbound domain of webhook, used in case of event type `inbound`")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	webhooksUpdateWebhookByIdCmd.Flags().BoolVar(&webhooksUpdateWebhookByIdFlags.batched, "batched", false, "Batching configuration of the webhook, we send batched webhooks if its true")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	webhooksUpdateWebhookByIdCmd.Flags().StringSliceVar(&webhooksUpdateWebhookByIdFlags.headers, "headers", nil, "")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	webhooksUpdateWebhookByIdCmd.Flags().StringVar(&webhooksUpdateWebhookByIdFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	webhooksCmd.AddCommand(webhooksUpdateWebhookByIdCmd)
 }
@@ -47,6 +65,55 @@ func runWebhooksUpdateWebhookById(cmd *cobra.Command, args []string) error {
 			Required:    true,
 			Location:    "path",
 			Description: "Id of the webhook",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "description",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Description of the webhook",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "url",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "URL of the webhook",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "events",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "- Events triggering the webhook. Possible values for **Transactional** type webhook: #### `sent` OR `request`, `delivered`, `hardBounce`, `softBounce`, `blocked`, `spam`, `invalid`, `deferred`, `click`, `opened`, `uniqueOpened` and `unsubscribed` - Possible values for **Marketing** type webhook: #### `spam`, `opened`, `click`, `hardBounce`, `softBounce`, `unsubscribed`, `listAddition` & `delivered` - Possible values for **Inbound** type webhook: #### `inboundEmailProcessed` ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "domain",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Inbound domain of webhook, used in case of event type `inbound`",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "batched",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "Batching configuration of the webhook, we send batched webhooks if its true",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "auth",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Authentication header to be send with the webhook requests",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "headers",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "",
 		})
 
 		type responseSchema struct {
@@ -144,6 +211,25 @@ func runWebhooksUpdateWebhookById(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("description") {
+		bodyMap["description"] = webhooksUpdateWebhookByIdFlags.description
+	}
+	if cmd.Flags().Changed("url") {
+		bodyMap["url"] = webhooksUpdateWebhookByIdFlags.url
+	}
+	if cmd.Flags().Changed("events") {
+		bodyMap["events"] = webhooksUpdateWebhookByIdFlags.events
+	}
+	if cmd.Flags().Changed("domain") {
+		bodyMap["domain"] = webhooksUpdateWebhookByIdFlags.domain
+	}
+	if cmd.Flags().Changed("batched") {
+		bodyMap["batched"] = webhooksUpdateWebhookByIdFlags.batched
+	}
+	if cmd.Flags().Changed("headers") {
+		bodyMap["headers"] = webhooksUpdateWebhookByIdFlags.headers
 	}
 	req.Body = bodyMap
 

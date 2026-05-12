@@ -27,14 +27,14 @@ var conversationsSetAgentOnlineStatusFlags struct {
 
 func init() {
 	conversationsSetAgentOnlineStatusCmd.Flags().StringVar(&conversationsSetAgentOnlineStatusFlags.agentId, "agent-id", "", "agent ID. It can be found on agent’s page or received <a href=\"https://developers.brevo.com/docs/conversations-webhooks\">from a webhook</a>. Alternatively, you can use `agentEmail` + `agentName` + `receivedFrom` instead (all 3 fields required).")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	conversationsSetAgentOnlineStatusCmd.Flags().StringVar(&conversationsSetAgentOnlineStatusFlags.receivedFrom, "received-from", "", "mark your messages to distinguish messages created by you from the others.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	conversationsSetAgentOnlineStatusCmd.Flags().StringVar(&conversationsSetAgentOnlineStatusFlags.agentEmail, "agent-email", "", "agent email. When sending online pings from a standalone system, it’s hard to maintain a 1-to-1 relationship between the users of both systems. In this case, an agent can be specified by their email address. If there’s no agent with the specified email address in your Brevo organization, a dummy agent will be created automatically.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	conversationsSetAgentOnlineStatusCmd.Flags().StringVar(&conversationsSetAgentOnlineStatusFlags.agentName, "agent-name", "", "agent name")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	conversationsSetAgentOnlineStatusCmd.Flags().StringVar(&conversationsSetAgentOnlineStatusFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	conversationsSetAgentOnlineStatusCmd.Flags().StringVar(&conversationsSetAgentOnlineStatusFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	conversationsCmd.AddCommand(conversationsSetAgentOnlineStatusCmd)
 }

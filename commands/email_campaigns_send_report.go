@@ -19,13 +19,16 @@ var emailCampaignsSendReportCmd = &cobra.Command{
 
 var emailCampaignsSendReportFlags struct {
 	campaignId int
+	language   string
 	body       string
 }
 
 func init() {
 	emailCampaignsSendReportCmd.Flags().IntVar(&emailCampaignsSendReportFlags.campaignId, "campaign-id", 0, "Id of the campaign")
 	emailCampaignsSendReportCmd.MarkFlagRequired("campaign-id")
-	emailCampaignsSendReportCmd.Flags().StringVar(&emailCampaignsSendReportFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	emailCampaignsSendReportCmd.Flags().StringVar(&emailCampaignsSendReportFlags.language, "language", "", "Language of email content for campaign report sending.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	emailCampaignsSendReportCmd.Flags().StringVar(&emailCampaignsSendReportFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	emailCampaignsCmd.AddCommand(emailCampaignsSendReportCmd)
 }
@@ -47,6 +50,20 @@ func runEmailCampaignsSendReport(cmd *cobra.Command, args []string) error {
 			Required:    true,
 			Location:    "path",
 			Description: "Id of the campaign",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "language",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Language of email content for campaign report sending.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "email",
+			Type:        "object",
+			Required:    true,
+			Location:    "body",
+			Description: "Custom attributes for the report email.",
 		})
 
 		type responseSchema struct {
@@ -144,6 +161,10 @@ func runEmailCampaignsSendReport(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("language") {
+		bodyMap["language"] = emailCampaignsSendReportFlags.language
 	}
 	req.Body = bodyMap
 

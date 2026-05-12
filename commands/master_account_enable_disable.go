@@ -39,32 +39,32 @@ func init() {
 	masterAccountEnableDisableCmd.Flags().IntVar(&masterAccountEnableDisableFlags.id, "id", 0, "Id of the sub-account organization (mandatory)")
 	masterAccountEnableDisableCmd.MarkFlagRequired("id")
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.inbox, "inbox", false, "Set this field to enable or disable Inbox on the sub-account / Not applicable on ENTv2")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.whatsapp, "whatsapp", false, "Set this field to enable or disable Whatsapp campaigns on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.automation, "automation", false, "Set this field to enable or disable Automation on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.emailCampaigns, "email-campaigns", false, "Set this field to enable or disable Email Campaigns on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.smsCampaigns, "sms-campaigns", false, "Set this field to enable or disable SMS Marketing on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.landingPages, "landing-pages", false, "Set this field to enable or disable Landing pages on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.transactionalEmails, "transactional-emails", false, "Set this field to enable or disable Transactional Email on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.transactionalSms, "transactional-sms", false, "Set this field to enable or disable Transactional SMS on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.facebookAds, "facebook-ads", false, "Set this field to enable or disable Facebook ads on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.webPush, "web-push", false, "Set this field to enable or disable Web Push on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.meetings, "meetings", false, "Set this field to enable or disable Meetings on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.conversations, "conversations", false, "Set this field to enable or disable Conversations on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountEnableDisableCmd.Flags().BoolVar(&masterAccountEnableDisableFlags.crm, "crm", false, "Set this field to enable or disable Sales CRM on the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	masterAccountEnableDisableCmd.Flags().StringVar(&masterAccountEnableDisableFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	masterAccountEnableDisableCmd.Flags().StringVar(&masterAccountEnableDisableFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	masterAccountCmd.AddCommand(masterAccountEnableDisableCmd)
 }

@@ -27,8 +27,8 @@ func init() {
 	smsCampaignsUpdateStatusCmd.Flags().IntVar(&smsCampaignsUpdateStatusFlags.campaignId, "campaign-id", 0, "id of the campaign")
 	smsCampaignsUpdateStatusCmd.MarkFlagRequired("campaign-id")
 	smsCampaignsUpdateStatusCmd.Flags().StringVar(&smsCampaignsUpdateStatusFlags.status, "status", "", "Note:- **replicateTemplate** status will be available **only for template type campaigns.** ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	smsCampaignsUpdateStatusCmd.Flags().StringVar(&smsCampaignsUpdateStatusFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	smsCampaignsUpdateStatusCmd.Flags().StringVar(&smsCampaignsUpdateStatusFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	smsCampaignsCmd.AddCommand(smsCampaignsUpdateStatusCmd)
 }

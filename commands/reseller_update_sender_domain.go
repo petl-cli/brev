@@ -30,8 +30,8 @@ func init() {
 	resellerUpdateSenderDomainCmd.Flags().StringVar(&resellerUpdateSenderDomainFlags.domainName, "domain-name", "", "Pass the existing domain that needs to be updated")
 	resellerUpdateSenderDomainCmd.MarkFlagRequired("domain-name")
 	resellerUpdateSenderDomainCmd.Flags().StringVar(&resellerUpdateSenderDomainFlags.domain, "domain", "", "Value for the sender domain that will replace the existing domain")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	resellerUpdateSenderDomainCmd.Flags().StringVar(&resellerUpdateSenderDomainFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	resellerUpdateSenderDomainCmd.Flags().StringVar(&resellerUpdateSenderDomainFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	resellerCmd.AddCommand(resellerUpdateSenderDomainCmd)
 }

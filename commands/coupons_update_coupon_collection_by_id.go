@@ -30,14 +30,14 @@ func init() {
 	couponsUpdateCouponCollectionByIdCmd.Flags().StringVar(&couponsUpdateCouponCollectionByIdFlags.id, "id", "", "Id of the collection to update")
 	couponsUpdateCouponCollectionByIdCmd.MarkFlagRequired("id")
 	couponsUpdateCouponCollectionByIdCmd.Flags().StringVar(&couponsUpdateCouponCollectionByIdFlags.defaultCoupon, "default-coupon", "", "A default coupon to be used in case there are no coupons left")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	couponsUpdateCouponCollectionByIdCmd.Flags().StringVar(&couponsUpdateCouponCollectionByIdFlags.expirationDate, "expiration-date", "", "Specify an expiration date for the coupon collection in RFC3339 format. Use null to remove the expiration date.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	couponsUpdateCouponCollectionByIdCmd.Flags().IntVar(&couponsUpdateCouponCollectionByIdFlags.remainingDaysAlert, "remaining-days-alert", 0, "Send a notification alert (email) when the remaining days until the expiration date are equal or fall bellow this number. Use null to disable alerts.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	couponsUpdateCouponCollectionByIdCmd.Flags().IntVar(&couponsUpdateCouponCollectionByIdFlags.remainingCouponsAlert, "remaining-coupons-alert", 0, "Send a notification alert (email) when the remaining coupons count is equal or fall bellow this number. Use null to disable alerts.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	couponsUpdateCouponCollectionByIdCmd.Flags().StringVar(&couponsUpdateCouponCollectionByIdFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	couponsUpdateCouponCollectionByIdCmd.Flags().StringVar(&couponsUpdateCouponCollectionByIdFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	couponsCmd.AddCommand(couponsUpdateCouponCollectionByIdCmd)
 }

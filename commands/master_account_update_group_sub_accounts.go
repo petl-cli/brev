@@ -28,10 +28,10 @@ func init() {
 	masterAccountUpdateGroupSubAccountsCmd.Flags().StringVar(&masterAccountUpdateGroupSubAccountsFlags.id, "id", "", "Id of the group")
 	masterAccountUpdateGroupSubAccountsCmd.MarkFlagRequired("id")
 	masterAccountUpdateGroupSubAccountsCmd.Flags().StringVar(&masterAccountUpdateGroupSubAccountsFlags.groupName, "group-name", "", "The name of the group of sub-accounts")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountUpdateGroupSubAccountsCmd.Flags().StringSliceVar(&masterAccountUpdateGroupSubAccountsFlags.subAccountIds, "sub-account-ids", nil, "Pass the list of sub-account Ids to be included in the group")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	masterAccountUpdateGroupSubAccountsCmd.Flags().StringVar(&masterAccountUpdateGroupSubAccountsFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	masterAccountUpdateGroupSubAccountsCmd.Flags().StringVar(&masterAccountUpdateGroupSubAccountsFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	masterAccountCmd.AddCommand(masterAccountUpdateGroupSubAccountsCmd)
 }

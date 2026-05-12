@@ -70,7 +70,7 @@ The binary is ` + "`" + `brevo-api` + "`" + `. Build from source or download a r
 
 - API key — set ` + "`" + `BREVO_API_API_KEY` + "`" + ` or pass ` + "`" + `--api-key <key>` + "`" + `
 
-Run ` + "`" + `brevo-api configure` + "`" + ` to set credentials interactively.
+Run ` + "`" + `brevo-api configure` + "`" + ` to see how to set credentials.
 
 ## Commands
 

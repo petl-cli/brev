@@ -18,14 +18,35 @@ var smsCampaignsUpdateCampaignByIdCmd = &cobra.Command{
 }
 
 var smsCampaignsUpdateCampaignByIdFlags struct {
-	campaignId int
-	body       string
+	campaignId             int
+	name                   string
+	sender                 string
+	content                string
+	scheduledAt            string
+	unicodeEnabled         bool
+	organisationPrefix     string
+	unsubscribeInstruction string
+	body                   string
 }
 
 func init() {
 	smsCampaignsUpdateCampaignByIdCmd.Flags().IntVar(&smsCampaignsUpdateCampaignByIdFlags.campaignId, "campaign-id", 0, "id of the SMS campaign")
 	smsCampaignsUpdateCampaignByIdCmd.MarkFlagRequired("campaign-id")
-	smsCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&smsCampaignsUpdateCampaignByIdFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	smsCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&smsCampaignsUpdateCampaignByIdFlags.name, "name", "", "Name of the campaign")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	smsCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&smsCampaignsUpdateCampaignByIdFlags.sender, "sender", "", "Name of the sender. **The number of characters is limited to 11 for alphanumeric characters and 15 for numeric characters** ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	smsCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&smsCampaignsUpdateCampaignByIdFlags.content, "content", "", "Content of the message. The **maximum characters used per SMS is 160**, if used more than that, it will be counted as more than one SMS ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	smsCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&smsCampaignsUpdateCampaignByIdFlags.scheduledAt, "scheduled-at", "", "UTC date-time on which the campaign has to run (YYYY-MM-DDTHH:mm:ss.SSSZ). **Prefer to pass your timezone in date-time format for accurate result.** ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	smsCampaignsUpdateCampaignByIdCmd.Flags().BoolVar(&smsCampaignsUpdateCampaignByIdFlags.unicodeEnabled, "unicode-enabled", false, "Format of the message. It indicates whether the content should be treated as unicode or not. ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	smsCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&smsCampaignsUpdateCampaignByIdFlags.organisationPrefix, "organisation-prefix", "", "A recognizable prefix will ensure your audience knows who you are. Recommended by U.S. carriers. This will be added as your Brand Name before the message content. **Prefer verifying maximum length of 160 characters including this prefix in message content to avoid multiple sending of same sms.**")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	smsCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&smsCampaignsUpdateCampaignByIdFlags.unsubscribeInstruction, "unsubscribe-instruction", "", "Instructions to unsubscribe from future communications. Recommended by U.S. carriers. Must include **STOP** keyword. This will be added as instructions after the end of message content. **Prefer verifying maximum length of 160 characters including this instructions in message content to avoid multiple sending of same sms.**")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	smsCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&smsCampaignsUpdateCampaignByIdFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	smsCampaignsCmd.AddCommand(smsCampaignsUpdateCampaignByIdCmd)
 }
@@ -47,6 +68,62 @@ func runSmsCampaignsUpdateCampaignById(cmd *cobra.Command, args []string) error 
 			Required:    true,
 			Location:    "path",
 			Description: "id of the SMS campaign",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "name",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Name of the campaign",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "sender",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Name of the sender. **The number of characters is limited to 11 for alphanumeric characters and 15 for numeric characters** ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "content",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Content of the message. The **maximum characters used per SMS is 160**, if used more than that, it will be counted as more than one SMS ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "recipients",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "scheduled-at",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "UTC date-time on which the campaign has to run (YYYY-MM-DDTHH:mm:ss.SSSZ). **Prefer to pass your timezone in date-time format for accurate result.** ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "unicode-enabled",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "Format of the message. It indicates whether the content should be treated as unicode or not. ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "organisation-prefix",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "A recognizable prefix will ensure your audience knows who you are. Recommended by U.S. carriers. This will be added as your Brand Name before the message content. **Prefer verifying maximum length of 160 characters including this prefix in message content to avoid multiple sending of same sms.**",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "unsubscribe-instruction",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Instructions to unsubscribe from future communications. Recommended by U.S. carriers. Must include **STOP** keyword. This will be added as instructions after the end of message content. **Prefer verifying maximum length of 160 characters including this instructions in message content to avoid multiple sending of same sms.**",
 		})
 
 		type responseSchema struct {
@@ -144,6 +221,28 @@ func runSmsCampaignsUpdateCampaignById(cmd *cobra.Command, args []string) error 
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("name") {
+		bodyMap["name"] = smsCampaignsUpdateCampaignByIdFlags.name
+	}
+	if cmd.Flags().Changed("sender") {
+		bodyMap["sender"] = smsCampaignsUpdateCampaignByIdFlags.sender
+	}
+	if cmd.Flags().Changed("content") {
+		bodyMap["content"] = smsCampaignsUpdateCampaignByIdFlags.content
+	}
+	if cmd.Flags().Changed("scheduled-at") {
+		bodyMap["scheduledAt"] = smsCampaignsUpdateCampaignByIdFlags.scheduledAt
+	}
+	if cmd.Flags().Changed("unicode-enabled") {
+		bodyMap["unicodeEnabled"] = smsCampaignsUpdateCampaignByIdFlags.unicodeEnabled
+	}
+	if cmd.Flags().Changed("organisation-prefix") {
+		bodyMap["organisationPrefix"] = smsCampaignsUpdateCampaignByIdFlags.organisationPrefix
+	}
+	if cmd.Flags().Changed("unsubscribe-instruction") {
+		bodyMap["unsubscribeInstruction"] = smsCampaignsUpdateCampaignByIdFlags.unsubscribeInstruction
 	}
 	req.Body = bodyMap
 

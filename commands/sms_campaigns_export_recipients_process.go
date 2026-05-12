@@ -28,10 +28,10 @@ func init() {
 	smsCampaignsExportRecipientsProcessCmd.Flags().IntVar(&smsCampaignsExportRecipientsProcessFlags.campaignId, "campaign-id", 0, "id of the campaign")
 	smsCampaignsExportRecipientsProcessCmd.MarkFlagRequired("campaign-id")
 	smsCampaignsExportRecipientsProcessCmd.Flags().StringVar(&smsCampaignsExportRecipientsProcessFlags.notifyUrl, "notify-url", "", "URL that will be called once the export process is finished. For reference, https://help.brevo.com/hc/en-us/articles/360007666479")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	smsCampaignsExportRecipientsProcessCmd.Flags().StringVar(&smsCampaignsExportRecipientsProcessFlags.recipientsType, "recipients-type", "", "Filter the recipients based on how they interacted with the campaign")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	smsCampaignsExportRecipientsProcessCmd.Flags().StringVar(&smsCampaignsExportRecipientsProcessFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	smsCampaignsExportRecipientsProcessCmd.Flags().StringVar(&smsCampaignsExportRecipientsProcessFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	smsCampaignsCmd.AddCommand(smsCampaignsExportRecipientsProcessCmd)
 }
@@ -64,7 +64,7 @@ func runSmsCampaignsExportRecipientsProcess(cmd *cobra.Command, args []string) e
 		flags = append(flags, flagSchema{
 			Name:        "recipients-type",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Filter the recipients based on how they interacted with the campaign",
 		})

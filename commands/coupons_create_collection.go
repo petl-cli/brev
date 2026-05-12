@@ -28,16 +28,16 @@ var couponsCreateCollectionFlags struct {
 
 func init() {
 	couponsCreateCollectionCmd.Flags().StringVar(&couponsCreateCollectionFlags.name, "name", "", "Name of the coupons collection")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	couponsCreateCollectionCmd.Flags().StringVar(&couponsCreateCollectionFlags.defaultCoupon, "default-coupon", "", "Default coupons collection name")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	couponsCreateCollectionCmd.Flags().StringVar(&couponsCreateCollectionFlags.expirationDate, "expiration-date", "", "Specify an expiration date for the coupon collection in RFC3339 format. Use null to remove the expiration date.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	couponsCreateCollectionCmd.Flags().IntVar(&couponsCreateCollectionFlags.remainingDaysAlert, "remaining-days-alert", 0, "Send a notification alert (email) when the remaining days until the expiration date are equal or fall bellow this number. Use null to disable alerts.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	couponsCreateCollectionCmd.Flags().IntVar(&couponsCreateCollectionFlags.remainingCouponsAlert, "remaining-coupons-alert", 0, "Send a notification alert (email) when the remaining coupons count is equal or fall bellow this number. Use null to disable alerts.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	couponsCreateCollectionCmd.Flags().StringVar(&couponsCreateCollectionFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	couponsCreateCollectionCmd.Flags().StringVar(&couponsCreateCollectionFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	couponsCmd.AddCommand(couponsCreateCollectionCmd)
 }
@@ -56,14 +56,14 @@ func runCouponsCreateCollection(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "name",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Name of the coupons collection",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "default-coupon",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Default coupons collection name",
 		})

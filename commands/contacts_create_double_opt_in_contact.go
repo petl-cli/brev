@@ -18,11 +18,26 @@ var contactsCreateDoubleOptInContactCmd = &cobra.Command{
 }
 
 var contactsCreateDoubleOptInContactFlags struct {
-	body string
+	email          string
+	includeListIds []string
+	excludeListIds []string
+	templateId     int
+	redirectionUrl string
+	body           string
 }
 
 func init() {
-	contactsCreateDoubleOptInContactCmd.Flags().StringVar(&contactsCreateDoubleOptInContactFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	contactsCreateDoubleOptInContactCmd.Flags().StringVar(&contactsCreateDoubleOptInContactFlags.email, "email", "", "Email address where the confirmation email will be sent. This email address will be the identifier for all other contact attributes.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateDoubleOptInContactCmd.Flags().StringSliceVar(&contactsCreateDoubleOptInContactFlags.includeListIds, "include-list-ids", nil, "Lists under user account where contact should be added")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateDoubleOptInContactCmd.Flags().StringSliceVar(&contactsCreateDoubleOptInContactFlags.excludeListIds, "exclude-list-ids", nil, "Lists under user account where contact should not be added")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateDoubleOptInContactCmd.Flags().IntVar(&contactsCreateDoubleOptInContactFlags.templateId, "template-id", 0, "Id of the Double opt-in (DOI) template")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateDoubleOptInContactCmd.Flags().StringVar(&contactsCreateDoubleOptInContactFlags.redirectionUrl, "redirection-url", "", "URL of the web page that user will be redirected to after clicking on the double opt in URL. When editing your DOI template you can reference this URL by using the tag **{{ params.DOIurl }}**. ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateDoubleOptInContactCmd.Flags().StringVar(&contactsCreateDoubleOptInContactFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	contactsCmd.AddCommand(contactsCreateDoubleOptInContactCmd)
 }
@@ -38,6 +53,48 @@ func runContactsCreateDoubleOptInContact(cmd *cobra.Command, args []string) erro
 			Description string `json:"description,omitempty"`
 		}
 		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "email",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "Email address where the confirmation email will be sent. This email address will be the identifier for all other contact attributes.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "attributes",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Pass the set of attributes and their values. **These attributes must be present in your Brevo account**. For eg. **{'FNAME':'Elly', 'LNAME':'Roger'}** ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "include-list-ids",
+			Type:        "array",
+			Required:    true,
+			Location:    "body",
+			Description: "Lists under user account where contact should be added",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "exclude-list-ids",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "Lists under user account where contact should not be added",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "template-id",
+			Type:        "integer",
+			Required:    true,
+			Location:    "body",
+			Description: "Id of the Double opt-in (DOI) template",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "redirection-url",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "URL of the web page that user will be redirected to after clicking on the double opt in URL. When editing your DOI template you can reference this URL by using the tag **{{ params.DOIurl }}**. ",
+		})
 
 		type responseSchema struct {
 			Status      string `json:"status"`
@@ -133,6 +190,22 @@ func runContactsCreateDoubleOptInContact(cmd *cobra.Command, args []string) erro
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("email") {
+		bodyMap["email"] = contactsCreateDoubleOptInContactFlags.email
+	}
+	if cmd.Flags().Changed("include-list-ids") {
+		bodyMap["includeListIds"] = contactsCreateDoubleOptInContactFlags.includeListIds
+	}
+	if cmd.Flags().Changed("exclude-list-ids") {
+		bodyMap["excludeListIds"] = contactsCreateDoubleOptInContactFlags.excludeListIds
+	}
+	if cmd.Flags().Changed("template-id") {
+		bodyMap["templateId"] = contactsCreateDoubleOptInContactFlags.templateId
+	}
+	if cmd.Flags().Changed("redirection-url") {
+		bodyMap["redirectionUrl"] = contactsCreateDoubleOptInContactFlags.redirectionUrl
 	}
 	req.Body = bodyMap
 

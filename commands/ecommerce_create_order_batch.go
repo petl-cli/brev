@@ -26,12 +26,12 @@ var ecommerceCreateOrderBatchFlags struct {
 
 func init() {
 	ecommerceCreateOrderBatchCmd.Flags().StringSliceVar(&ecommerceCreateOrderBatchFlags.orders, "orders", nil, "array of order objects")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	ecommerceCreateOrderBatchCmd.Flags().StringVar(&ecommerceCreateOrderBatchFlags.notifyUrl, "notify-url", "", "Notify Url provided by client to get the status of batch request")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	ecommerceCreateOrderBatchCmd.Flags().BoolVar(&ecommerceCreateOrderBatchFlags.historical, "historical", false, "Defines wether you want your orders to be considered as live data or as historical data (import of past data, synchronising data). True: orders will not trigger any automation workflows. False: orders will trigger workflows as usual.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	ecommerceCreateOrderBatchCmd.Flags().StringVar(&ecommerceCreateOrderBatchFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	ecommerceCreateOrderBatchCmd.Flags().StringVar(&ecommerceCreateOrderBatchFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	ecommerceCmd.AddCommand(ecommerceCreateOrderBatchCmd)
 }
@@ -50,7 +50,7 @@ func runEcommerceCreateOrderBatch(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "orders",
 			Type:        "array",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "array of order objects",
 		})

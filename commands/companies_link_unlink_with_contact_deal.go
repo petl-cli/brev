@@ -30,14 +30,14 @@ func init() {
 	companiesLinkUnlinkWithContactDealCmd.Flags().StringVar(&companiesLinkUnlinkWithContactDealFlags.id, "id", "", "")
 	companiesLinkUnlinkWithContactDealCmd.MarkFlagRequired("id")
 	companiesLinkUnlinkWithContactDealCmd.Flags().StringSliceVar(&companiesLinkUnlinkWithContactDealFlags.linkContactIds, "link-contact-ids", nil, "Contact ids for contacts to be linked with company")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	companiesLinkUnlinkWithContactDealCmd.Flags().StringSliceVar(&companiesLinkUnlinkWithContactDealFlags.unlinkContactIds, "unlink-contact-ids", nil, "Contact ids for contacts to be unlinked from company")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	companiesLinkUnlinkWithContactDealCmd.Flags().StringSliceVar(&companiesLinkUnlinkWithContactDealFlags.linkDealsIds, "link-deals-ids", nil, "Deal ids for deals to be linked with company")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	companiesLinkUnlinkWithContactDealCmd.Flags().StringSliceVar(&companiesLinkUnlinkWithContactDealFlags.unlinkDealsIds, "unlink-deals-ids", nil, "Deal ids for deals to be unlinked from company")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	companiesLinkUnlinkWithContactDealCmd.Flags().StringVar(&companiesLinkUnlinkWithContactDealFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	companiesLinkUnlinkWithContactDealCmd.Flags().StringVar(&companiesLinkUnlinkWithContactDealFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	companiesCmd.AddCommand(companiesLinkUnlinkWithContactDealCmd)
 }

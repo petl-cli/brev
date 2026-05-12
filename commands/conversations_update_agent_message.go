@@ -27,8 +27,8 @@ func init() {
 	conversationsUpdateAgentMessageCmd.Flags().StringVar(&conversationsUpdateAgentMessageFlags.id, "id", "", "ID of the message")
 	conversationsUpdateAgentMessageCmd.MarkFlagRequired("id")
 	conversationsUpdateAgentMessageCmd.Flags().StringVar(&conversationsUpdateAgentMessageFlags.text, "text", "", "edited message text")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	conversationsUpdateAgentMessageCmd.Flags().StringVar(&conversationsUpdateAgentMessageFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	conversationsUpdateAgentMessageCmd.Flags().StringVar(&conversationsUpdateAgentMessageFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	conversationsCmd.AddCommand(conversationsUpdateAgentMessageCmd)
 }
@@ -54,7 +54,7 @@ func runConversationsUpdateAgentMessage(cmd *cobra.Command, args []string) error
 		flags = append(flags, flagSchema{
 			Name:        "text",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "edited message text",
 		})

@@ -24,8 +24,8 @@ var transactionalEmailsAddBlockedDomainFlags struct {
 
 func init() {
 	transactionalEmailsAddBlockedDomainCmd.Flags().StringVar(&transactionalEmailsAddBlockedDomainFlags.domain, "domain", "", "name of the domain to be blocked")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	transactionalEmailsAddBlockedDomainCmd.Flags().StringVar(&transactionalEmailsAddBlockedDomainFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalEmailsAddBlockedDomainCmd.Flags().StringVar(&transactionalEmailsAddBlockedDomainFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	transactionalEmailsCmd.AddCommand(transactionalEmailsAddBlockedDomainCmd)
 }
@@ -44,7 +44,7 @@ func runTransactionalEmailsAddBlockedDomain(cmd *cobra.Command, args []string) e
 		flags = append(flags, flagSchema{
 			Name:        "domain",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "name of the domain to be blocked",
 		})

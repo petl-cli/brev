@@ -18,11 +18,17 @@ var contactsExportProcessIdCmd = &cobra.Command{
 }
 
 var contactsExportProcessIdFlags struct {
-	body string
+	exportAttributes []string
+	notifyUrl        string
+	body             string
 }
 
 func init() {
-	contactsExportProcessIdCmd.Flags().StringVar(&contactsExportProcessIdFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	contactsExportProcessIdCmd.Flags().StringSliceVar(&contactsExportProcessIdFlags.exportAttributes, "export-attributes", nil, "List of all the attributes that you want to export. **These attributes must be present in your contact database.** For example: **['fname', 'lname', 'email']** ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsExportProcessIdCmd.Flags().StringVar(&contactsExportProcessIdFlags.notifyUrl, "notify-url", "", "Webhook that will be called once the export process is finished. For reference, https://help.brevo.com/hc/en-us/articles/360007666479")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsExportProcessIdCmd.Flags().StringVar(&contactsExportProcessIdFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	contactsCmd.AddCommand(contactsExportProcessIdCmd)
 }
@@ -38,6 +44,27 @@ func runContactsExportProcessId(cmd *cobra.Command, args []string) error {
 			Description string `json:"description,omitempty"`
 		}
 		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "export-attributes",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "List of all the attributes that you want to export. **These attributes must be present in your contact database.** For example: **['fname', 'lname', 'email']** ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "custom-contact-filter",
+			Type:        "object",
+			Required:    true,
+			Location:    "body",
+			Description: "Set the filter for the contacts to be exported. ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "notify-url",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Webhook that will be called once the export process is finished. For reference, https://help.brevo.com/hc/en-us/articles/360007666479",
+		})
 
 		type responseSchema struct {
 			Status      string `json:"status"`
@@ -128,6 +155,13 @@ func runContactsExportProcessId(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("export-attributes") {
+		bodyMap["exportAttributes"] = contactsExportProcessIdFlags.exportAttributes
+	}
+	if cmd.Flags().Changed("notify-url") {
+		bodyMap["notifyUrl"] = contactsExportProcessIdFlags.notifyUrl
 	}
 	req.Body = bodyMap
 

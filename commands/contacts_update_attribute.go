@@ -31,10 +31,10 @@ func init() {
 	contactsUpdateAttributeCmd.Flags().StringVar(&contactsUpdateAttributeFlags.attributeName, "attribute-name", "", "Name of the existing attribute")
 	contactsUpdateAttributeCmd.MarkFlagRequired("attribute-name")
 	contactsUpdateAttributeCmd.Flags().StringVar(&contactsUpdateAttributeFlags.value, "value", "", "Value of the attribute to update. **Use only if the attribute's category is 'calculated' or 'global'** ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	contactsUpdateAttributeCmd.Flags().StringSliceVar(&contactsUpdateAttributeFlags.enumeration, "enumeration", nil, "List of the values and labels that the attribute can take. **Use only if the attribute's category is \"category\"**. For example, **[{\"value\":1, \"label\":\"male\"}, {\"value\":2, \"label\":\"female\"}]** ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	contactsUpdateAttributeCmd.Flags().StringVar(&contactsUpdateAttributeFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsUpdateAttributeCmd.Flags().StringVar(&contactsUpdateAttributeFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	contactsCmd.AddCommand(contactsUpdateAttributeCmd)
 }

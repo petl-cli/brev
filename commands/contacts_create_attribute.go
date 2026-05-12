@@ -33,14 +33,14 @@ func init() {
 	contactsCreateAttributeCmd.Flags().StringVar(&contactsCreateAttributeFlags.attributeName, "attribute-name", "", "Name of the attribute")
 	contactsCreateAttributeCmd.MarkFlagRequired("attribute-name")
 	contactsCreateAttributeCmd.Flags().StringVar(&contactsCreateAttributeFlags.value, "value", "", "Value of the attribute. **Use only if the attribute's category is 'calculated' or 'global'** ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	contactsCreateAttributeCmd.Flags().BoolVar(&contactsCreateAttributeFlags.isRecurring, "is-recurring", false, "Type of the attribute. **Use only if the attribute's category is 'calculated' or 'global'** ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	contactsCreateAttributeCmd.Flags().StringSliceVar(&contactsCreateAttributeFlags.enumeration, "enumeration", nil, "List of values and labels that the attribute can take. **Use only if the attribute's category is \"category\"**. For example: **[{\"value\":1, \"label\":\"male\"}, {\"value\":2, \"label\":\"female\"}]** ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	contactsCreateAttributeCmd.Flags().StringVar(&contactsCreateAttributeFlags.type_, "type", "", "Type of the attribute. **Use only if the attribute's category is 'normal', 'category' or 'transactional'** Type **boolean** is only available if the category is **normal** attribute Type **id** is only available if the category is **transactional** attribute Type **category** is only available if the category is **category** attribute ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	contactsCreateAttributeCmd.Flags().StringVar(&contactsCreateAttributeFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateAttributeCmd.Flags().StringVar(&contactsCreateAttributeFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	contactsCmd.AddCommand(contactsCreateAttributeCmd)
 }

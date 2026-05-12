@@ -31,22 +31,22 @@ var transactionalSmsSendSmsMessageToMobileFlags struct {
 
 func init() {
 	transactionalSmsSendSmsMessageToMobileCmd.Flags().StringVar(&transactionalSmsSendSmsMessageToMobileFlags.sender, "sender", "", "Name of the sender. **The number of characters is limited to 11 for alphanumeric characters and 15 for numeric characters** ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	transactionalSmsSendSmsMessageToMobileCmd.Flags().StringVar(&transactionalSmsSendSmsMessageToMobileFlags.recipient, "recipient", "", "Mobile number to send SMS with the country code")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	transactionalSmsSendSmsMessageToMobileCmd.Flags().StringVar(&transactionalSmsSendSmsMessageToMobileFlags.content, "content", "", "Content of the message. If more than **160 characters** long, will be sent as multiple text messages ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	transactionalSmsSendSmsMessageToMobileCmd.Flags().StringVar(&transactionalSmsSendSmsMessageToMobileFlags.type_, "type", "", "Type of the SMS. Marketing SMS messages are those sent typically with marketing content. Transactional SMS messages are sent to individuals and are triggered in response to some action, such as a sign-up, purchase, etc.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	transactionalSmsSendSmsMessageToMobileCmd.Flags().StringVar(&transactionalSmsSendSmsMessageToMobileFlags.tag, "tag", "", "Tag of the message")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	transactionalSmsSendSmsMessageToMobileCmd.Flags().StringVar(&transactionalSmsSendSmsMessageToMobileFlags.webUrl, "web-url", "", "Webhook to call for each event triggered by the message (delivered etc.)")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	transactionalSmsSendSmsMessageToMobileCmd.Flags().BoolVar(&transactionalSmsSendSmsMessageToMobileFlags.unicodeEnabled, "unicode-enabled", false, "Format of the message. It indicates whether the content should be treated as unicode or not. ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	transactionalSmsSendSmsMessageToMobileCmd.Flags().StringVar(&transactionalSmsSendSmsMessageToMobileFlags.organisationPrefix, "organisation-prefix", "", "A recognizable prefix will ensure your audience knows who you are. Recommended by U.S. carriers. This will be added as your Brand Name before the message content. **Prefer verifying maximum length of 160 characters including this prefix in message content to avoid multiple sending of same sms.**")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	transactionalSmsSendSmsMessageToMobileCmd.Flags().StringVar(&transactionalSmsSendSmsMessageToMobileFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalSmsSendSmsMessageToMobileCmd.Flags().StringVar(&transactionalSmsSendSmsMessageToMobileFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	transactionalSmsCmd.AddCommand(transactionalSmsSendSmsMessageToMobileCmd)
 }
@@ -65,21 +65,21 @@ func runTransactionalSmsSendSmsMessageToMobile(cmd *cobra.Command, args []string
 		flags = append(flags, flagSchema{
 			Name:        "sender",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Name of the sender. **The number of characters is limited to 11 for alphanumeric characters and 15 for numeric characters** ",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "recipient",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Mobile number to send SMS with the country code",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "content",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Content of the message. If more than **160 characters** long, will be sent as multiple text messages ",
 		})

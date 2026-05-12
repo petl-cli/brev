@@ -18,11 +18,32 @@ var contactsCreateNewContactCmd = &cobra.Command{
 }
 
 var contactsCreateNewContactFlags struct {
-	body string
+	email               string
+	extId               string
+	emailBlacklisted    bool
+	smsBlacklisted      bool
+	listIds             []string
+	updateEnabled       bool
+	smtpBlacklistSender []string
+	body                string
 }
 
 func init() {
-	contactsCreateNewContactCmd.Flags().StringVar(&contactsCreateNewContactFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	contactsCreateNewContactCmd.Flags().StringVar(&contactsCreateNewContactFlags.email, "email", "", "Email address of the user. **Mandatory if \"SMS\" field is not passed in \"attributes\" parameter**. Mobile Number in **SMS** field should be passed with proper country code. For example: **{\"SMS\":\"+91xxxxxxxxxx\"}** or **{\"SMS\":\"0091xxxxxxxxxx\"}** ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateNewContactCmd.Flags().StringVar(&contactsCreateNewContactFlags.extId, "ext-id", "", "Pass your own Id to create a contact.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateNewContactCmd.Flags().BoolVar(&contactsCreateNewContactFlags.emailBlacklisted, "email-blacklisted", false, "Set this field to blacklist the contact for emails (emailBlacklisted = true)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateNewContactCmd.Flags().BoolVar(&contactsCreateNewContactFlags.smsBlacklisted, "sms-blacklisted", false, "Set this field to blacklist the contact for SMS (smsBlacklisted = true)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateNewContactCmd.Flags().StringSliceVar(&contactsCreateNewContactFlags.listIds, "list-ids", nil, "Ids of the lists to add the contact to")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateNewContactCmd.Flags().BoolVar(&contactsCreateNewContactFlags.updateEnabled, "update-enabled", false, "Facilitate to update the existing contact in the same request (updateEnabled = true)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateNewContactCmd.Flags().StringSliceVar(&contactsCreateNewContactFlags.smtpBlacklistSender, "smtp-blacklist-sender", nil, "transactional email forbidden sender for contact. Use only for email Contact ( only available if updateEnabled = true )")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateNewContactCmd.Flags().StringVar(&contactsCreateNewContactFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	contactsCmd.AddCommand(contactsCreateNewContactCmd)
 }
@@ -38,6 +59,62 @@ func runContactsCreateNewContact(cmd *cobra.Command, args []string) error {
 			Description string `json:"description,omitempty"`
 		}
 		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "email",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Email address of the user. **Mandatory if \"SMS\" field is not passed in \"attributes\" parameter**. Mobile Number in **SMS** field should be passed with proper country code. For example: **{\"SMS\":\"+91xxxxxxxxxx\"}** or **{\"SMS\":\"0091xxxxxxxxxx\"}** ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "ext-id",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Pass your own Id to create a contact.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "attributes",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Pass the set of attributes and their values. The attribute's parameter should be passed in capital letter while creating a contact. Values that don't match the attribute type (e.g. text or string in a date attribute) will be ignored. **These attributes must be present in your Brevo account.**. For eg: **{\"FNAME\":\"Elly\", \"LNAME\":\"Roger\"}** ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "email-blacklisted",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "Set this field to blacklist the contact for emails (emailBlacklisted = true)",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "sms-blacklisted",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "Set this field to blacklist the contact for SMS (smsBlacklisted = true)",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "list-ids",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "Ids of the lists to add the contact to",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "update-enabled",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "Facilitate to update the existing contact in the same request (updateEnabled = true)",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "smtp-blacklist-sender",
+			Type:        "array",
+			Required:    false,
+			Location:    "body",
+			Description: "transactional email forbidden sender for contact. Use only for email Contact ( only available if updateEnabled = true )",
+		})
 
 		type responseSchema struct {
 			Status      string `json:"status"`
@@ -133,6 +210,28 @@ func runContactsCreateNewContact(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("email") {
+		bodyMap["email"] = contactsCreateNewContactFlags.email
+	}
+	if cmd.Flags().Changed("ext-id") {
+		bodyMap["ext_id"] = contactsCreateNewContactFlags.extId
+	}
+	if cmd.Flags().Changed("email-blacklisted") {
+		bodyMap["emailBlacklisted"] = contactsCreateNewContactFlags.emailBlacklisted
+	}
+	if cmd.Flags().Changed("sms-blacklisted") {
+		bodyMap["smsBlacklisted"] = contactsCreateNewContactFlags.smsBlacklisted
+	}
+	if cmd.Flags().Changed("list-ids") {
+		bodyMap["listIds"] = contactsCreateNewContactFlags.listIds
+	}
+	if cmd.Flags().Changed("update-enabled") {
+		bodyMap["updateEnabled"] = contactsCreateNewContactFlags.updateEnabled
+	}
+	if cmd.Flags().Changed("smtp-blacklist-sender") {
+		bodyMap["smtpBlacklistSender"] = contactsCreateNewContactFlags.smtpBlacklistSender
 	}
 	req.Body = bodyMap
 

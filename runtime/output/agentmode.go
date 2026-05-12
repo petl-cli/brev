@@ -5,7 +5,7 @@ import (
 )
 
 var knownAgentEnvVars = []string{
-	"CLAUDE_CODE",
+	"CLAUDECODE",         // Claude Code sets CLAUDECODE=1
 	"CURSOR_SESSION_ID",
 	"CODEX",
 	"AIDER",
@@ -15,6 +15,7 @@ var knownAgentEnvVars = []string{
 	"AMAZON_Q_SESSION",
 	"GEMINI_CODE_ASSIST",
 	"CODY",
+	"AI_AGENT",          // generic catch-all (e.g. AI_AGENT=claude-code/...)
 }
 
 // DetectAgentMode returns true if any known agent environment variable is set,

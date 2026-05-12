@@ -25,10 +25,10 @@ var masterAccountCreateGroupOfSubAccountsFlags struct {
 
 func init() {
 	masterAccountCreateGroupOfSubAccountsCmd.Flags().StringVar(&masterAccountCreateGroupOfSubAccountsFlags.groupName, "group-name", "", "The name of the group of sub-accounts")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountCreateGroupOfSubAccountsCmd.Flags().StringSliceVar(&masterAccountCreateGroupOfSubAccountsFlags.subAccountIds, "sub-account-ids", nil, "Pass the list of sub-account Ids to be included in the group")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	masterAccountCreateGroupOfSubAccountsCmd.Flags().StringVar(&masterAccountCreateGroupOfSubAccountsFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	masterAccountCreateGroupOfSubAccountsCmd.Flags().StringVar(&masterAccountCreateGroupOfSubAccountsFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	masterAccountCmd.AddCommand(masterAccountCreateGroupOfSubAccountsCmd)
 }
@@ -47,7 +47,7 @@ func runMasterAccountCreateGroupOfSubAccounts(cmd *cobra.Command, args []string)
 		flags = append(flags, flagSchema{
 			Name:        "group-name",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "The name of the group of sub-accounts",
 		})

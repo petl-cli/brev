@@ -22,7 +22,7 @@ var webhooksExportAllEventsFlags struct {
 }
 
 func init() {
-	webhooksExportAllEventsCmd.Flags().StringVar(&webhooksExportAllEventsFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	webhooksExportAllEventsCmd.Flags().StringVar(&webhooksExportAllEventsFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	webhooksCmd.AddCommand(webhooksExportAllEventsCmd)
 }

@@ -22,7 +22,7 @@ const SchemaVersion = "1"
 
 // DefaultEndpoint is the platform feedback ingest URL. Override at generation
 // time by passing a different endpoint to Submit.
-const DefaultEndpoint = "https://feedback.clicreator.dev/v1/feedback"
+const DefaultEndpoint = "https://petl.dev/api/feedback/ingest"
 
 // MaxMessageLen mirrors the ingestion service's cap. We trim client-side too
 // so an oversized message produces a clear local error instead of a 400.

@@ -27,8 +27,8 @@ func init() {
 	sendersValidateSenderUsingOtpCmd.Flags().IntVar(&sendersValidateSenderUsingOtpFlags.senderId, "sender-id", 0, "Id of the sender")
 	sendersValidateSenderUsingOtpCmd.MarkFlagRequired("sender-id")
 	sendersValidateSenderUsingOtpCmd.Flags().IntVar(&sendersValidateSenderUsingOtpFlags.otp, "otp", 0, "6 digit OTP received on email")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	sendersValidateSenderUsingOtpCmd.Flags().StringVar(&sendersValidateSenderUsingOtpFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	sendersValidateSenderUsingOtpCmd.Flags().StringVar(&sendersValidateSenderUsingOtpFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	sendersCmd.AddCommand(sendersValidateSenderUsingOtpCmd)
 }
@@ -54,7 +54,7 @@ func runSendersValidateSenderUsingOtp(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "otp",
 			Type:        "integer",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "6 digit OTP received on email",
 		})

@@ -26,12 +26,12 @@ var sendersCreateNewSenderFlags struct {
 
 func init() {
 	sendersCreateNewSenderCmd.Flags().StringVar(&sendersCreateNewSenderFlags.name, "name", "", "From Name to use for the sender")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	sendersCreateNewSenderCmd.Flags().StringVar(&sendersCreateNewSenderFlags.email, "email", "", "From email to use for the sender. A verification email will be sent to this address.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	sendersCreateNewSenderCmd.Flags().StringSliceVar(&sendersCreateNewSenderFlags.ips, "ips", nil, "**Mandatory in case of dedicated IP**. IPs to associate to the sender ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	sendersCreateNewSenderCmd.Flags().StringVar(&sendersCreateNewSenderFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	sendersCreateNewSenderCmd.Flags().StringVar(&sendersCreateNewSenderFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	sendersCmd.AddCommand(sendersCreateNewSenderCmd)
 }
@@ -50,14 +50,14 @@ func runSendersCreateNewSender(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "name",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "From Name to use for the sender",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "email",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "From email to use for the sender. A verification email will be sent to this address.",
 		})

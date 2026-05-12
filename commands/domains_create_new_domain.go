@@ -24,8 +24,8 @@ var domainsCreateNewDomainFlags struct {
 
 func init() {
 	domainsCreateNewDomainCmd.Flags().StringVar(&domainsCreateNewDomainFlags.name, "name", "", "Domain name")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	domainsCreateNewDomainCmd.Flags().StringVar(&domainsCreateNewDomainFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	domainsCreateNewDomainCmd.Flags().StringVar(&domainsCreateNewDomainFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	domainsCmd.AddCommand(domainsCreateNewDomainCmd)
 }
@@ -44,7 +44,7 @@ func runDomainsCreateNewDomain(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "name",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Domain name",
 		})

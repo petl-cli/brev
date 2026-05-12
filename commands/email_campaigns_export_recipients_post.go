@@ -28,10 +28,10 @@ func init() {
 	emailCampaignsExportRecipientsPostCmd.Flags().IntVar(&emailCampaignsExportRecipientsPostFlags.campaignId, "campaign-id", 0, "Id of the campaign")
 	emailCampaignsExportRecipientsPostCmd.MarkFlagRequired("campaign-id")
 	emailCampaignsExportRecipientsPostCmd.Flags().StringVar(&emailCampaignsExportRecipientsPostFlags.notifyUrl, "notify-url", "", "Webhook called once the export process is finished. For reference, https://help.brevo.com/hc/en-us/articles/360007666479")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	emailCampaignsExportRecipientsPostCmd.Flags().StringVar(&emailCampaignsExportRecipientsPostFlags.recipientsType, "recipients-type", "", "Type of recipients to export for a campaign")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	emailCampaignsExportRecipientsPostCmd.Flags().StringVar(&emailCampaignsExportRecipientsPostFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	emailCampaignsExportRecipientsPostCmd.Flags().StringVar(&emailCampaignsExportRecipientsPostFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	emailCampaignsCmd.AddCommand(emailCampaignsExportRecipientsPostCmd)
 }
@@ -64,7 +64,7 @@ func runEmailCampaignsExportRecipientsPost(cmd *cobra.Command, args []string) er
 		flags = append(flags, flagSchema{
 			Name:        "recipients-type",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Type of recipients to export for a campaign",
 		})

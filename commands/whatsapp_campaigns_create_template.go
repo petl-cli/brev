@@ -30,20 +30,20 @@ var whatsappCampaignsCreateTemplateFlags struct {
 
 func init() {
 	whatsappCampaignsCreateTemplateCmd.Flags().StringVar(&whatsappCampaignsCreateTemplateFlags.name, "name", "", "Name of the template")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	whatsappCampaignsCreateTemplateCmd.Flags().StringVar(&whatsappCampaignsCreateTemplateFlags.language, "language", "", "Language of the template. For Example : **en** for English ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	whatsappCampaignsCreateTemplateCmd.Flags().StringVar(&whatsappCampaignsCreateTemplateFlags.category, "category", "", "Category of the template")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	whatsappCampaignsCreateTemplateCmd.Flags().StringVar(&whatsappCampaignsCreateTemplateFlags.mediaUrl, "media-url", "", "Absolute url of the media file **(no local file)** for the header. **Use this field in you want to add media in Template header and headerText is empty**. Allowed extensions for media files are: #### jpeg | png | mp4 | pdf ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	whatsappCampaignsCreateTemplateCmd.Flags().StringVar(&whatsappCampaignsCreateTemplateFlags.bodyText, "body-text", "", "Body of the template. **Maximum allowed characters are 1024**")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	whatsappCampaignsCreateTemplateCmd.Flags().StringVar(&whatsappCampaignsCreateTemplateFlags.headerText, "header-text", "", "Text content of the header in the template. **Maximum allowed characters are 45** **Use this field to add text content in template header and if mediaUrl is empty** ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	whatsappCampaignsCreateTemplateCmd.Flags().StringVar(&whatsappCampaignsCreateTemplateFlags.source, "source", "", "source of the template")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	whatsappCampaignsCreateTemplateCmd.Flags().StringVar(&whatsappCampaignsCreateTemplateFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	whatsappCampaignsCreateTemplateCmd.Flags().StringVar(&whatsappCampaignsCreateTemplateFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	whatsappCampaignsCmd.AddCommand(whatsappCampaignsCreateTemplateCmd)
 }
@@ -62,21 +62,21 @@ func runWhatsappCampaignsCreateTemplate(cmd *cobra.Command, args []string) error
 		flags = append(flags, flagSchema{
 			Name:        "name",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Name of the template",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "language",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Language of the template. For Example : **en** for English ",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "category",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Category of the template",
 		})
@@ -90,7 +90,7 @@ func runWhatsappCampaignsCreateTemplate(cmd *cobra.Command, args []string) error
 		flags = append(flags, flagSchema{
 			Name:        "body-text",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Body of the template. **Maximum allowed characters are 1024**",
 		})

@@ -18,14 +18,23 @@ var whatsappCampaignsUpdateCampaignByIdCmd = &cobra.Command{
 }
 
 var whatsappCampaignsUpdateCampaignByIdFlags struct {
-	campaignId int
-	body       string
+	campaignId     int
+	campaignName   string
+	campaignStatus string
+	rescheduleFor  string
+	body           string
 }
 
 func init() {
 	whatsappCampaignsUpdateCampaignByIdCmd.Flags().IntVar(&whatsappCampaignsUpdateCampaignByIdFlags.campaignId, "campaign-id", 0, "id of the campaign")
 	whatsappCampaignsUpdateCampaignByIdCmd.MarkFlagRequired("campaign-id")
-	whatsappCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&whatsappCampaignsUpdateCampaignByIdFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	whatsappCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&whatsappCampaignsUpdateCampaignByIdFlags.campaignName, "campaign-name", "", "Name of the campaign")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	whatsappCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&whatsappCampaignsUpdateCampaignByIdFlags.campaignStatus, "campaign-status", "", "Status of the campaign")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	whatsappCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&whatsappCampaignsUpdateCampaignByIdFlags.rescheduleFor, "reschedule-for", "", "Reschedule the sending UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of campaign. **Prefer to pass your timezone in date-time format for accurate result.For example: **2017-06-01T12:30:00+02:00** Use this field to update the scheduledAt of any existing draft or scheduled WhatsApp campaign. ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	whatsappCampaignsUpdateCampaignByIdCmd.Flags().StringVar(&whatsappCampaignsUpdateCampaignByIdFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	whatsappCampaignsCmd.AddCommand(whatsappCampaignsUpdateCampaignByIdCmd)
 }
@@ -47,6 +56,34 @@ func runWhatsappCampaignsUpdateCampaignById(cmd *cobra.Command, args []string) e
 			Required:    true,
 			Location:    "path",
 			Description: "id of the campaign",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "campaign-name",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Name of the campaign",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "campaign-status",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Status of the campaign",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "reschedule-for",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Reschedule the sending UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of campaign. **Prefer to pass your timezone in date-time format for accurate result.For example: **2017-06-01T12:30:00+02:00** Use this field to update the scheduledAt of any existing draft or scheduled WhatsApp campaign. ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "recipients",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Segment ids and List ids to include/exclude from campaign",
 		})
 
 		type responseSchema struct {
@@ -139,6 +176,16 @@ func runWhatsappCampaignsUpdateCampaignById(cmd *cobra.Command, args []string) e
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("campaign-name") {
+		bodyMap["campaignName"] = whatsappCampaignsUpdateCampaignByIdFlags.campaignName
+	}
+	if cmd.Flags().Changed("campaign-status") {
+		bodyMap["campaignStatus"] = whatsappCampaignsUpdateCampaignByIdFlags.campaignStatus
+	}
+	if cmd.Flags().Changed("reschedule-for") {
+		bodyMap["rescheduleFor"] = whatsappCampaignsUpdateCampaignByIdFlags.rescheduleFor
 	}
 	req.Body = bodyMap
 

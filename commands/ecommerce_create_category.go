@@ -28,16 +28,16 @@ var ecommerceCreateCategoryFlags struct {
 
 func init() {
 	ecommerceCreateCategoryCmd.Flags().StringVar(&ecommerceCreateCategoryFlags.id, "id", "", "Unique Category ID as saved in the shop ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	ecommerceCreateCategoryCmd.Flags().StringVar(&ecommerceCreateCategoryFlags.name, "name", "", "**Mandatory in case of creation**. Name of the Category, as displayed in the shop ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	ecommerceCreateCategoryCmd.Flags().StringVar(&ecommerceCreateCategoryFlags.url, "url", "", "URL to the category")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	ecommerceCreateCategoryCmd.Flags().BoolVar(&ecommerceCreateCategoryFlags.updateEnabled, "update-enabled", false, "Facilitate to update the existing category in the same request (updateEnabled = true)")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	ecommerceCreateCategoryCmd.Flags().StringVar(&ecommerceCreateCategoryFlags.deletedAt, "deleted-at", "", "UTC date-time (YYYY-MM-DDTHH:mm:ss.SSSZ) of the category deleted from the shop's database")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	ecommerceCreateCategoryCmd.Flags().StringVar(&ecommerceCreateCategoryFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	ecommerceCreateCategoryCmd.Flags().StringVar(&ecommerceCreateCategoryFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	ecommerceCmd.AddCommand(ecommerceCreateCategoryCmd)
 }
@@ -56,7 +56,7 @@ func runEcommerceCreateCategory(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "id",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Unique Category ID as saved in the shop ",
 		})

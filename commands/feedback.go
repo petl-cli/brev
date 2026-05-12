@@ -14,7 +14,7 @@ import (
 // feedbackEndpoint and feedbackToken are baked in at generation time.
 // An empty token disables the command (returns a clear error).
 const (
-	feedbackEndpoint = "https://feedback-ingest.onrender.com/v1/feedback"
+	feedbackEndpoint = ""
 	feedbackToken    = "3d57a83c-993a-4ece-aa6c-ac1f07ddea19"
 )
 

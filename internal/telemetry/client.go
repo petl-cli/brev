@@ -12,13 +12,58 @@ import (
 )
 
 const (
-	_endpoint      = "https://petl.dev/api/telemetry/ingest"
+	_endpoint      = "http://localhost:3000/api/telemetry/ingest"
 	_token         = "3d57a83c-993a-4ece-aa6c-ac1f07ddea19"
 	_envNoTelKey   = "BREVO_API_NO_TELEMETRY"
 	_batchSize     = 20
 	_batchInterval = 10 * time.Second
 	_flushTimeout  = 2 * time.Second
 )
+
+// CallerType identifies what kind of process is running the CLI.
+type CallerType string
+
+const (
+	CallerHuman CallerType = "human"
+	CallerAgent CallerType = "agent"
+)
+
+// CallerInfo holds the detected identity of the CLI caller.
+type CallerInfo struct {
+	Type      CallerType
+	AgentType string // e.g. "claude_code", "cursor"; empty for non-agents
+}
+
+type agentProbe struct {
+	env       string
+	agentType string
+}
+
+// agentProbes is evaluated in order; first match wins.
+var agentProbes = []agentProbe{
+	{"CLAUDECODE", "claude_code"}, // Claude Code sets CLAUDECODE=1
+	{"CURSOR_SESSION_ID", "cursor"},
+	{"CLINE_SESSION_ID", "cline"},
+	{"WINDSURF_SESSION", "windsurf"},
+	{"GITHUB_COPILOT", "github_copilot"},
+	{"AMAZON_Q_SESSION", "amazon_q"},
+	{"CODEX", "codex"},
+	{"AIDER", "aider"},
+	{"CODY", "cody"},
+	{"GEMINI_CODE_ASSIST", "gemini"},
+	{"AI_AGENT", "unknown_agent"}, // generic catch-all (e.g. AI_AGENT=claude-code/...)
+}
+
+// DetectCaller inspects environment variables to identify who is running the CLI.
+// Best-effort; never blocks or makes network calls. Defaults to CallerHuman.
+func DetectCaller() CallerInfo {
+	for _, p := range agentProbes {
+		if os.Getenv(p.env) != "" {
+			return CallerInfo{Type: CallerAgent, AgentType: p.agentType}
+		}
+	}
+	return CallerInfo{Type: CallerHuman}
+}
 
 // Event is one CLI command invocation. Events are buffered and shipped as
 // a JSON array to the ingest endpoint asynchronously.
@@ -34,6 +79,8 @@ type Event struct {
 	SessionId   string    `json:"session_id"`
 	Version     string    `json:"version"`
 	OccurredAt  time.Time `json:"occurred_at"`
+	CallerType  string    `json:"caller_type,omitempty"`
+	AgentType   string    `json:"agent_type,omitempty"`
 }
 
 // Client buffers events in a channel and batch-flushes them asynchronously.

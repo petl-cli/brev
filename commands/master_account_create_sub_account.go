@@ -27,14 +27,14 @@ var masterAccountCreateSubAccountFlags struct {
 
 func init() {
 	masterAccountCreateSubAccountCmd.Flags().StringVar(&masterAccountCreateSubAccountFlags.companyName, "company-name", "", "Set the name of the sub-account company")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountCreateSubAccountCmd.Flags().StringVar(&masterAccountCreateSubAccountFlags.email, "email", "", "Email address for the organization")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountCreateSubAccountCmd.Flags().StringVar(&masterAccountCreateSubAccountFlags.language, "language", "", "Set the language of the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	masterAccountCreateSubAccountCmd.Flags().StringVar(&masterAccountCreateSubAccountFlags.timezone, "timezone", "", "Set the timezone of the sub-account")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	masterAccountCreateSubAccountCmd.Flags().StringVar(&masterAccountCreateSubAccountFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	masterAccountCreateSubAccountCmd.Flags().StringVar(&masterAccountCreateSubAccountFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	masterAccountCmd.AddCommand(masterAccountCreateSubAccountCmd)
 }
@@ -53,14 +53,14 @@ func runMasterAccountCreateSubAccount(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "company-name",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Set the name of the sub-account company",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "email",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Email address for the organization",
 		})

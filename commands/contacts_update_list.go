@@ -28,10 +28,10 @@ func init() {
 	contactsUpdateListCmd.Flags().IntVar(&contactsUpdateListFlags.listId, "list-id", 0, "Id of the list")
 	contactsUpdateListCmd.MarkFlagRequired("list-id")
 	contactsUpdateListCmd.Flags().StringVar(&contactsUpdateListFlags.name, "name", "", "Name of the list. Either of the two parameters (name, folderId) can be updated at a time.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	contactsUpdateListCmd.Flags().IntVar(&contactsUpdateListFlags.folderId, "folder-id", 0, "Id of the folder in which the list is to be moved. Either of the two parameters (name, folderId) can be updated at a time.")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	contactsUpdateListCmd.Flags().StringVar(&contactsUpdateListFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsUpdateListCmd.Flags().StringVar(&contactsUpdateListFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	contactsCmd.AddCommand(contactsUpdateListCmd)
 }

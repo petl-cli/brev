@@ -27,8 +27,8 @@ func init() {
 	emailCampaignsSendTestToTestListCmd.Flags().IntVar(&emailCampaignsSendTestToTestListFlags.campaignId, "campaign-id", 0, "Id of the campaign")
 	emailCampaignsSendTestToTestListCmd.MarkFlagRequired("campaign-id")
 	emailCampaignsSendTestToTestListCmd.Flags().StringSliceVar(&emailCampaignsSendTestToTestListFlags.emailTo, "email-to", nil, "List of the email addresses of the recipients whom you wish to send the test mail. _If left empty, the test mail will be sent to your entire test list. You can not send more than 50 test emails per day_. ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	emailCampaignsSendTestToTestListCmd.Flags().StringVar(&emailCampaignsSendTestToTestListFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	emailCampaignsSendTestToTestListCmd.Flags().StringVar(&emailCampaignsSendTestToTestListFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	emailCampaignsCmd.AddCommand(emailCampaignsSendTestToTestListCmd)
 }

@@ -25,10 +25,10 @@ var contactsCreateListFlags struct {
 
 func init() {
 	contactsCreateListCmd.Flags().StringVar(&contactsCreateListFlags.name, "name", "", "Name of the list")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	contactsCreateListCmd.Flags().IntVar(&contactsCreateListFlags.folderId, "folder-id", 0, "Id of the parent folder in which this list is to be created")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	contactsCreateListCmd.Flags().StringVar(&contactsCreateListFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	contactsCreateListCmd.Flags().StringVar(&contactsCreateListFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	contactsCmd.AddCommand(contactsCreateListCmd)
 }
@@ -47,14 +47,14 @@ func runContactsCreateList(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "name",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Name of the list",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "folder-id",
 			Type:        "integer",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "Id of the parent folder in which this list is to be created",
 		})

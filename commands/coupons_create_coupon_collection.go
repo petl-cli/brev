@@ -25,10 +25,10 @@ var couponsCreateCouponCollectionFlags struct {
 
 func init() {
 	couponsCreateCouponCollectionCmd.Flags().StringVar(&couponsCreateCouponCollectionFlags.collectionId, "collection-id", "", "The id of the coupon collection for which the coupons will be created")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	couponsCreateCouponCollectionCmd.Flags().StringSliceVar(&couponsCreateCouponCollectionFlags.coupons, "coupons", nil, "")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	couponsCreateCouponCollectionCmd.Flags().StringVar(&couponsCreateCouponCollectionFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	couponsCreateCouponCollectionCmd.Flags().StringVar(&couponsCreateCouponCollectionFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	couponsCmd.AddCommand(couponsCreateCouponCollectionCmd)
 }
@@ -47,14 +47,14 @@ func runCouponsCreateCouponCollection(cmd *cobra.Command, args []string) error {
 		flags = append(flags, flagSchema{
 			Name:        "collection-id",
 			Type:        "string",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "The id of the coupon collection for which the coupons will be created",
 		})
 		flags = append(flags, flagSchema{
 			Name:        "coupons",
 			Type:        "array",
-			Required:    false,
+			Required:    true,
 			Location:    "body",
 			Description: "",
 		})

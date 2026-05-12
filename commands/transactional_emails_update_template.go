@@ -18,14 +18,41 @@ var transactionalEmailsUpdateTemplateCmd = &cobra.Command{
 }
 
 var transactionalEmailsUpdateTemplateFlags struct {
-	templateId int
-	body       string
+	templateId    int
+	tag           string
+	templateName  string
+	htmlContent   string
+	htmlUrl       string
+	subject       string
+	replyTo       string
+	toField       string
+	attachmentUrl string
+	isActive      bool
+	body          string
 }
 
 func init() {
 	transactionalEmailsUpdateTemplateCmd.Flags().IntVar(&transactionalEmailsUpdateTemplateFlags.templateId, "template-id", 0, "id of the template")
 	transactionalEmailsUpdateTemplateCmd.MarkFlagRequired("template-id")
-	transactionalEmailsUpdateTemplateCmd.Flags().StringVar(&transactionalEmailsUpdateTemplateFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	transactionalEmailsUpdateTemplateCmd.Flags().StringVar(&transactionalEmailsUpdateTemplateFlags.tag, "tag", "", "Tag of the template")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalEmailsUpdateTemplateCmd.Flags().StringVar(&transactionalEmailsUpdateTemplateFlags.templateName, "template-name", "", "Name of the template")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalEmailsUpdateTemplateCmd.Flags().StringVar(&transactionalEmailsUpdateTemplateFlags.htmlContent, "html-content", "", "**Required if htmlUrl is empty**. If the template is designed using Drag & Drop editor via HTML content, then the design page will not have Drag & Drop editor access for that template. Body of the message (HTML must have more than 10 characters) ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalEmailsUpdateTemplateCmd.Flags().StringVar(&transactionalEmailsUpdateTemplateFlags.htmlUrl, "html-url", "", "**Required if htmlContent is empty**. URL to the body of the email (HTML) ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalEmailsUpdateTemplateCmd.Flags().StringVar(&transactionalEmailsUpdateTemplateFlags.subject, "subject", "", "Subject of the email")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalEmailsUpdateTemplateCmd.Flags().StringVar(&transactionalEmailsUpdateTemplateFlags.replyTo, "reply-to", "", "Email on which campaign recipients will be able to reply to")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalEmailsUpdateTemplateCmd.Flags().StringVar(&transactionalEmailsUpdateTemplateFlags.toField, "to-field", "", "To personalize the **To** Field. If you want to include the first name and last name of your recipient, add **{FNAME} {LNAME}**. These contact attributes must already exist in your Brevo account. If input parameter **params** used please use **{{contact.FNAME}} {{contact.LNAME}}** for personalization ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalEmailsUpdateTemplateCmd.Flags().StringVar(&transactionalEmailsUpdateTemplateFlags.attachmentUrl, "attachment-url", "", "Absolute url of the attachment (**no local file**). Extensions allowed: #### xlsx, xls, ods, docx, docm, doc, csv, pdf, txt, gif, jpg, jpeg, png, tif, tiff, rtf, bmp, cgm, css, shtml, html, htm, zip, xml, ppt, pptx, tar, ez, ics, mobi, msg, pub and eps ")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalEmailsUpdateTemplateCmd.Flags().BoolVar(&transactionalEmailsUpdateTemplateFlags.isActive, "is-active", false, "Status of the template. isActive = false means template is inactive, isActive = true means template is active")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalEmailsUpdateTemplateCmd.Flags().StringVar(&transactionalEmailsUpdateTemplateFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	transactionalEmailsCmd.AddCommand(transactionalEmailsUpdateTemplateCmd)
 }
@@ -47,6 +74,76 @@ func runTransactionalEmailsUpdateTemplate(cmd *cobra.Command, args []string) err
 			Required:    true,
 			Location:    "path",
 			Description: "id of the template",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "tag",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Tag of the template",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "sender",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Sender details including id or email and name (_optional_). Only one of either Sender's email or Sender's ID shall be passed in one request at a time. For example: **{\"name\":\"xyz\", \"email\":\"example@abc.com\"}** **{\"name\":\"xyz\", \"id\":123}** ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "template-name",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Name of the template",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "html-content",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "**Required if htmlUrl is empty**. If the template is designed using Drag & Drop editor via HTML content, then the design page will not have Drag & Drop editor access for that template. Body of the message (HTML must have more than 10 characters) ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "html-url",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "**Required if htmlContent is empty**. URL to the body of the email (HTML) ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "subject",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Subject of the email",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "reply-to",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Email on which campaign recipients will be able to reply to",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "to-field",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "To personalize the **To** Field. If you want to include the first name and last name of your recipient, add **{FNAME} {LNAME}**. These contact attributes must already exist in your Brevo account. If input parameter **params** used please use **{{contact.FNAME}} {{contact.LNAME}}** for personalization ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "attachment-url",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Absolute url of the attachment (**no local file**). Extensions allowed: #### xlsx, xls, ods, docx, docm, doc, csv, pdf, txt, gif, jpg, jpeg, png, tif, tiff, rtf, bmp, cgm, css, shtml, html, htm, zip, xml, ppt, pptx, tar, ez, ics, mobi, msg, pub and eps ",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "is-active",
+			Type:        "boolean",
+			Required:    false,
+			Location:    "body",
+			Description: "Status of the template. isActive = false means template is inactive, isActive = true means template is active",
 		})
 
 		type responseSchema struct {
@@ -144,6 +241,34 @@ func runTransactionalEmailsUpdateTemplate(cmd *cobra.Command, args []string) err
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("tag") {
+		bodyMap["tag"] = transactionalEmailsUpdateTemplateFlags.tag
+	}
+	if cmd.Flags().Changed("template-name") {
+		bodyMap["templateName"] = transactionalEmailsUpdateTemplateFlags.templateName
+	}
+	if cmd.Flags().Changed("html-content") {
+		bodyMap["htmlContent"] = transactionalEmailsUpdateTemplateFlags.htmlContent
+	}
+	if cmd.Flags().Changed("html-url") {
+		bodyMap["htmlUrl"] = transactionalEmailsUpdateTemplateFlags.htmlUrl
+	}
+	if cmd.Flags().Changed("subject") {
+		bodyMap["subject"] = transactionalEmailsUpdateTemplateFlags.subject
+	}
+	if cmd.Flags().Changed("reply-to") {
+		bodyMap["replyTo"] = transactionalEmailsUpdateTemplateFlags.replyTo
+	}
+	if cmd.Flags().Changed("to-field") {
+		bodyMap["toField"] = transactionalEmailsUpdateTemplateFlags.toField
+	}
+	if cmd.Flags().Changed("attachment-url") {
+		bodyMap["attachmentUrl"] = transactionalEmailsUpdateTemplateFlags.attachmentUrl
+	}
+	if cmd.Flags().Changed("is-active") {
+		bodyMap["isActive"] = transactionalEmailsUpdateTemplateFlags.isActive
 	}
 	req.Body = bodyMap
 

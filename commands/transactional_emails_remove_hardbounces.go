@@ -26,12 +26,12 @@ var transactionalEmailsRemoveHardbouncesFlags struct {
 
 func init() {
 	transactionalEmailsRemoveHardbouncesCmd.Flags().StringVar(&transactionalEmailsRemoveHardbouncesFlags.startDate, "start-date", "", "Starting date (YYYY-MM-DD) of the time period for deletion. The hardbounces occurred after this date will be deleted. Must be less than or equal to the endDate")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	transactionalEmailsRemoveHardbouncesCmd.Flags().StringVar(&transactionalEmailsRemoveHardbouncesFlags.endDate, "end-date", "", "Ending date (YYYY-MM-DD) of the time period for deletion. The hardbounces until this date will be deleted. Must be greater than or equal to the startDate")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	transactionalEmailsRemoveHardbouncesCmd.Flags().StringVar(&transactionalEmailsRemoveHardbouncesFlags.contactEmail, "contact-email", "", "Target a specific email address")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	transactionalEmailsRemoveHardbouncesCmd.Flags().StringVar(&transactionalEmailsRemoveHardbouncesFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	transactionalEmailsRemoveHardbouncesCmd.Flags().StringVar(&transactionalEmailsRemoveHardbouncesFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	transactionalEmailsCmd.AddCommand(transactionalEmailsRemoveHardbouncesCmd)
 }

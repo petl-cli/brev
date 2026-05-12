@@ -28,10 +28,10 @@ func init() {
 	resellerRemoveCreditsFromChildCmd.Flags().StringVar(&resellerRemoveCreditsFromChildFlags.childIdentifier, "child-identifier", "", "Either auth key or id of reseller's child")
 	resellerRemoveCreditsFromChildCmd.MarkFlagRequired("child-identifier")
 	resellerRemoveCreditsFromChildCmd.Flags().IntVar(&resellerRemoveCreditsFromChildFlags.sms, "sms", 0, "**Required if email credits are empty.** SMS credits to be removed from the child account ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
 	resellerRemoveCreditsFromChildCmd.Flags().IntVar(&resellerRemoveCreditsFromChildFlags.email, "email", 0, "**Required if sms credits are empty.** Email credits to be removed from the child account ")
-	// Note: body fields are not MarkFlagRequired — --body JSON satisfies them too.
-	resellerRemoveCreditsFromChildCmd.Flags().StringVar(&resellerRemoveCreditsFromChildFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	resellerRemoveCreditsFromChildCmd.Flags().StringVar(&resellerRemoveCreditsFromChildFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	resellerCmd.AddCommand(resellerRemoveCreditsFromChildCmd)
 }

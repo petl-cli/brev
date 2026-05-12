@@ -18,11 +18,17 @@ var eventTrackInteractionCmd = &cobra.Command{
 }
 
 var eventTrackInteractionFlags struct {
-	body string
+	eventName string
+	eventDate string
+	body      string
 }
 
 func init() {
-	eventTrackInteractionCmd.Flags().StringVar(&eventTrackInteractionFlags.body, "body", "", "Full request body as JSON (overrides individual flags)")
+	eventTrackInteractionCmd.Flags().StringVar(&eventTrackInteractionFlags.eventName, "event-name", "", "The name of the event that occurred. This is how you will find your event in Brevo. Limited to 255 characters, alphanumerical characters and - _ only.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	eventTrackInteractionCmd.Flags().StringVar(&eventTrackInteractionFlags.eventDate, "event-date", "", "Timestamp of when the event occurred (e.g. \"2024-01-24T17:39:57+01:00\"). If no value is passed, the timestamp of the event creation is used.")
+	// Note: body fields are not MarkFlagRequired in JSON mode — --body satisfies them too.
+	eventTrackInteractionCmd.Flags().StringVar(&eventTrackInteractionFlags.body, "body", "", "Full request body as JSON. Individual body flags override matching keys in this JSON.")
 
 	eventCmd.AddCommand(eventTrackInteractionCmd)
 }
@@ -38,6 +44,41 @@ func runEventTrackInteraction(cmd *cobra.Command, args []string) error {
 			Description string `json:"description,omitempty"`
 		}
 		var flags []flagSchema
+		flags = append(flags, flagSchema{
+			Name:        "event-name",
+			Type:        "string",
+			Required:    true,
+			Location:    "body",
+			Description: "The name of the event that occurred. This is how you will find your event in Brevo. Limited to 255 characters, alphanumerical characters and - _ only.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "event-date",
+			Type:        "string",
+			Required:    false,
+			Location:    "body",
+			Description: "Timestamp of when the event occurred (e.g. \"2024-01-24T17:39:57+01:00\"). If no value is passed, the timestamp of the event creation is used.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "identifiers",
+			Type:        "object",
+			Required:    true,
+			Location:    "body",
+			Description: "Identifies the contact associated with the event. At least one identifier is required.",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "contact-properties",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Properties defining the state of the contact associated to this event. Useful to update contact attributes defined in your contacts database while passing the event. For example: **\"FIRSTNAME\": \"Jane\" , \"AGE\": 37**",
+		})
+		flags = append(flags, flagSchema{
+			Name:        "event-properties",
+			Type:        "object",
+			Required:    false,
+			Location:    "body",
+			Description: "Properties of the event. Top level properties and nested properties can be used to better segment contacts and personalise workflow conditions. The following field type are supported: string, number, boolean (true/false), date (Timestamp e.g. \"2024-01-24T17:39:57+01:00\"). Keys are limited to 255 characters, alphanumerical characters and - _ only. Size is limited to 50Kb.",
+		})
 
 		type responseSchema struct {
 			Status      string `json:"status"`
@@ -133,6 +174,13 @@ func runEventTrackInteraction(cmd *cobra.Command, args []string) error {
 			cliErr.Write(os.Stderr)
 			return output.NewExitError(cliErr)
 		}
+	}
+	// Individual flags overlay onto body (flags take precedence over --body JSON)
+	if cmd.Flags().Changed("event-name") {
+		bodyMap["event_name"] = eventTrackInteractionFlags.eventName
+	}
+	if cmd.Flags().Changed("event-date") {
+		bodyMap["event_date"] = eventTrackInteractionFlags.eventDate
 	}
 	req.Body = bodyMap
 
