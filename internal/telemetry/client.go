@@ -186,7 +186,7 @@ func (c *Client) send(batch []Event) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.token)
-	req.Header.Set("User-Agent", "brevo-api-cli/0.1.1")
+	req.Header.Set("User-Agent", "brevo-api-cli/0.1.2")
 
 	resp, err := c.http.Do(req)
 	if err != nil {

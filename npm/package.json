@@ -1,6 +1,6 @@
 {
   "name": "@petl-cli/brev",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generated CLI — brevo-api",
   "bin": {
     "brevo-api": "bin/run.js"
