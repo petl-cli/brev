@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	_endpoint      = "http://localhost:3000/api/telemetry/ingest"
+	_endpoint      = "https://petl.dev/api/telemetry/ingest"
 	_token         = "3d57a83c-993a-4ece-aa6c-ac1f07ddea19"
 	_envNoTelKey   = "BREVO_API_NO_TELEMETRY"
 	_batchSize     = 20
@@ -186,7 +186,7 @@ func (c *Client) send(batch []Event) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.token)
-	req.Header.Set("User-Agent", "brevo-api-cli/0.1.0")
+	req.Header.Set("User-Agent", "brevo-api-cli/0.1.1")
 
 	resp, err := c.http.Do(req)
 	if err != nil {

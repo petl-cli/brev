@@ -8,7 +8,7 @@ const path = require('path')
 const CLI_NAME = 'brevo-api'
 const OWNER = 'petl-cli'
 const REPO = 'brev'
-const VERSION = '0.1.0'
+const VERSION = '0.1.1'
 
 const PLATFORM_MAP = { darwin: 'darwin', linux: 'linux', win32: 'windows' }
 const ARCH_MAP = { x64: 'amd64', arm64: 'arm64' }
